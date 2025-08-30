@@ -58,7 +58,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       Alert.alert('Registration Error', error.message);
       setIsLoading(false);
       throw error;
+    } else {
+      Alert.alert('Success', 'Account created successfully! You can now log in.');
     }
+    setIsLoading(false);
   };
 
   const logout = async () => {

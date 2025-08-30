@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useBanking } from '../context/BankingContext';
+import ConnectionTest from '../components/ConnectionTest';
 
 const HomeScreen = ({ navigation }: any) => {
   const { user, logout } = useAuth();
@@ -21,6 +22,8 @@ const HomeScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+      <ConnectionTest />
+      
       <Text style={styles.title}>Welcome, {user?.email}</Text>
       
       <View style={styles.balanceContainer}>
