@@ -23,6 +23,7 @@ CREATE TABLE bank_accounts (
   bank_name VARCHAR(255) NOT NULL,
   account_number VARCHAR(50) NOT NULL,
   account_holder_name VARCHAR(255) NOT NULL,
+  is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW()
 );
 */

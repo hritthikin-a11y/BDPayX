@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../context/AuthContext';
 import { useBanking } from '../context/BankingContext';
-import ConnectionTest from '../components/ConnectionTest';
+import CustomButton from '../components/CustomButton';
 
 const HomeScreen = ({ navigation }: any) => {
   const { user, logout } = useAuth();
@@ -11,61 +12,92 @@ const HomeScreen = ({ navigation }: any) => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Auth' }],
-      });
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
+  const ActionCard = ({ title, description, onPress, color = '#4A90E2' }: any) => (
+    <TouchableOpacity 
+      style={[styles.actionCard, { borderLeftColor: color }]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <Text style={styles.actionTitle}>{title}</Text>
+      <Text style={styles.actionDescription}>{description}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
-      <ConnectionTest />
+      <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
       
-      <Text style={styles.title}>Welcome, {user?.email}</Text>
-      
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceTitle}>Your Balance</Text>
-        <Text style={styles.balance}>BDT: {balance.bdt.toFixed(2)}</Text>
-        <Text style={styles.balance}>INR: {balance.inr.toFixed(2)}</Text>
-      </View>
-      
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Deposit')}
+      <LinearGradient
+        colors={['#4A90E2', '#357ABD']}
+        style={styles.header}
       >
-        <Text style={styles.buttonText}>Deposit</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Withdraw')}
-      >
-        <Text style={styles.buttonText}>Withdraw</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Exchange')}
-      >
-        <Text style={styles.buttonText}>Exchange</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Profile')}
-      >
-        <Text style={styles.buttonText}>Profile</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={[styles.button, styles.logoutButton]} 
-        onPress={handleLogout}
-      >
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.welcomeText}>Welcome back!</Text>
+          <Text style={styles.emailText}>{user?.email}</Text>
+        </View>
+      </LinearGradient>
+
+      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceTitle}>Your Wallet</Text>
+          <View style={styles.balanceRow}>
+            <View style={styles.currencyBox}>
+              <Text style={styles.currencyLabel}>BDT</Text>
+              <Text style={styles.currencyAmount}>৳{balance.bdt.toFixed(2)}</Text>
+            </View>
+            <View style={[styles.currencyBox, styles.currencyBoxSecondary]}>
+              <Text style={styles.currencyLabel}>INR</Text>
+              <Text style={styles.currencyAmount}>₹{balance.inr.toFixed(2)}</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.actionsContainer}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          
+          <ActionCard
+            title="💰 Deposit Money"
+            description="Add funds to your wallet"
+            onPress={() => navigation.navigate('DepositFlow')}
+            color="#28A745"
+          />
+          
+          <ActionCard
+            title="💸 Withdraw Funds"
+            description="Transfer money to your bank"
+            onPress={() => navigation.navigate('WithdrawFlow')}
+            color="#FD7E14"
+          />
+          
+          <ActionCard
+            title="🔄 Currency Exchange"
+            description="Convert between BDT and INR"
+            onPress={() => navigation.navigate('ExchangeFlow')}
+            color="#6F42C1"
+          />
+          
+          <ActionCard
+            title="👤 My Profile"
+            description="Manage your account settings"
+            onPress={() => navigation.navigate('ProfileFlow')}
+            color="#17A2B8"
+          />
+        </View>
+
+        <View style={styles.logoutContainer}>
+          <CustomButton
+            title="Sign Out"
+            onPress={handleLogout}
+            variant="outline"
+            size="medium"
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -73,49 +105,108 @@ const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F8F9FA',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+  header: {
+    paddingTop: StatusBar.currentHeight ? StatusBar.currentHeight + 20 : 50,
+    paddingBottom: 30,
+    paddingHorizontal: 24,
   },
-  balanceContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  balanceTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  balance: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
+  headerContent: {
     alignItems: 'center',
   },
-  logoutButton: {
-    backgroundColor: '#dc3545',
+  welcomeText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
-  buttonText: {
-    color: '#fff',
+  emailText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  scrollContent: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  balanceCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    marginTop: -20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  balanceTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2E3A59',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  currencyBox: {
+    flex: 1,
+    backgroundColor: '#E8F4FD',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+  },
+  currencyBoxSecondary: {
+    backgroundColor: '#FFF3E0',
+  },
+  currencyLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#7B8794',
+    marginBottom: 4,
+  },
+  currencyAmount: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#2E3A59',
+  },
+  actionsContainer: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2E3A59',
+    marginBottom: 16,
+  },
+  actionCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  actionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2E3A59',
+    marginBottom: 4,
+  },
+  actionDescription: {
+    fontSize: 14,
+    color: '#7B8794',
+  },
+  logoutContainer: {
+    paddingBottom: 32,
   },
 });
 
