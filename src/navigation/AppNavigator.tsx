@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 
 const HomeStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Deposit" component={DepositScreen} />
       <Stack.Screen name="Withdraw" component={WithdrawScreen} />
@@ -24,7 +24,7 @@ const HomeStack = () => {
 
 const AppNavigator = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Deposit" component={DepositScreen} />
       <Tab.Screen name="Withdraw" component={WithdrawScreen} />
