@@ -17,24 +17,24 @@ const AppContent = () => {
   }
 
   return (
-    &lt;Stack.Navigator screenOptions={{ headerShown: false }}&gt;
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
-        &lt;Stack.Screen name="App" component={AppNavigator} /&gt;
+        <Stack.Screen name="App" component={AppNavigator} />
       ) : (
-        &lt;Stack.Screen name="Auth" component={AuthNavigator} /&gt;
+        <Stack.Screen name="Auth" component={AuthNavigator} />
       )}
-    &lt;/Stack.Navigator&gt;
+    </Stack.Navigator>
   );
 };
 
 export default function App() {
   return (
-    &lt;AuthProvider&gt;
-      &lt;BankingProvider&gt;
-        &lt;NavigationContainer&gt;
-          &lt;AppContent /&gt;
-        &lt;/NavigationContainer&gt;
-      &lt;/BankingProvider&gt;
-    &lt;/AuthProvider&gt;
+    <AuthProvider>
+      <BankingProvider>
+        <NavigationContainer>
+          <AppContent />
+        </NavigationContainer>
+      </BankingProvider>
+    </AuthProvider>
   );
 }
