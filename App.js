@@ -1,21 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { AuthProvider } from './src/context/AuthContext';
+import { BankingProvider } from './src/context/BankingContext';
+import AuthNavigator from './src/navigation/AuthNavigator';
+import AppNavigator from './src/navigation/AppNavigator';
+import { useAuth } from './src/context/AuthContext';
+
+const Stack = createStackNavigator();
+
+const AppContent = () => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null; // Or a loading spinner
+  }
+
+  return (
+    &lt;Stack.Navigator screenOptions={{ headerShown: false }}&gt;
+      {user ? (
+        &lt;Stack.Screen name="App" component={AppNavigator} /&gt;
+      ) : (
+        &lt;Stack.Screen name="Auth" component={AuthNavigator} /&gt;
+      )}
+    &lt;/Stack.Navigator&gt;
+  );
+};
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    &lt;AuthProvider&gt;
+      &lt;BankingProvider&gt;
+        &lt;NavigationContainer&gt;
+          &lt;AppContent /&gt;
+        &lt;/NavigationContainer&gt;
+      &lt;/BankingProvider&gt;
+    &lt;/AuthProvider&gt;
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
