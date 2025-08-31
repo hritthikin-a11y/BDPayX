@@ -190,7 +190,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/deposit')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#10B981' }]}>
-              <Ionicons name="add" size={20} color="#FFFFFF" />
+              <Ionicons name="add" size={14} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Deposit</Text>
             <Text style={styles.actionSubtitle}>Add money</Text>
@@ -201,7 +201,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/withdraw')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#EF4444' }]}>
-              <Ionicons name="remove" size={20} color="#FFFFFF" />
+              <Ionicons name="remove" size={14} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Withdraw</Text>
             <Text style={styles.actionSubtitle}>Cash out</Text>
@@ -212,7 +212,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/exchange')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#F59E0B' }]}>
-              <Ionicons name="swap-horizontal" size={20} color="#FFFFFF" />
+              <Ionicons name="swap-horizontal" size={14} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Exchange</Text>
             <Text style={styles.actionSubtitle}>Convert</Text>
@@ -223,7 +223,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/transfer')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#8B5CF6' }]}>
-              <Ionicons name="send" size={20} color="#FFFFFF" />
+              <Ionicons name="send" size={14} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Transfer</Text>
             <Text style={styles.actionSubtitle}>Send money</Text>
@@ -400,14 +400,15 @@ const styles = StyleSheet.create({
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
+    gap: 8,
   },
   actionCard: {
     flex: 1,
-    minWidth: (width - 68) / 2,
+    maxWidth: '47%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 10,
+    padding: 12,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#F1F5F9',
@@ -418,22 +419,23 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginBottom: 6,
   },
   actionTitle: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
     color: '#1E293B',
-    marginBottom: 4,
+    marginBottom: 1,
   },
   actionSubtitle: {
-    fontSize: 12,
+    fontSize: 9,
     color: '#64748B',
+    textAlign: 'center',
   },
   emptyState: {
     alignItems: 'center',
