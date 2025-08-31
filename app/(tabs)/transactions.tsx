@@ -89,7 +89,7 @@ export default function TransactionsScreen() {
   const renderTransaction = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.transactionCard}
-      onPress={() => router.push(`/(tabs)/transaction-details/${item.id}`)}
+      onPress={() => router.push(`/transaction-details/${item.id}`)}
     >
       <View style={styles.transactionContent}>
         <View

@@ -134,14 +134,6 @@ export default function TabLayout() {
           headerShown: true,
         }}
       />
-      <Tabs.Screen
-        name="transaction-details"
-        options={{
-          href: null,
-          title: 'Transaction Details',
-          headerShown: true,
-        }}
-      />
     </Tabs>
   );
 }

@@ -8,18 +8,20 @@ import {
   Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useBanking } from '../../../providers/BankingProvider';
-import { formatCurrency } from '../../../lib/constants';
-import { Transaction } from '../../../lib/supabase';
+import { useBanking } from '../../providers/BankingProvider';
+import { formatCurrency } from '../../lib/constants';
+import { Transaction } from '../../lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import CustomButton from '../../../components/CustomButton';
+import CustomButton from '../../components/CustomButton';
 
 export default function TransactionDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { transactions } = useBanking();
-  
-  const transaction = transactions.find(t => t.id === id) as Transaction | undefined;
+
+  const transaction = transactions.find((t) => t.id === id) as
+    | Transaction
+    | undefined;
 
   if (!transaction) {
     return (
@@ -31,52 +33,99 @@ export default function TransactionDetailsScreen() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'SUCCESS': return 'checkmark-circle';
-      case 'PENDING': return 'hourglass-outline';
-      case 'FAILED': return 'close-circle';
-      case 'CANCELLED': return 'remove-circle-outline';
-      case 'REJECTED': return 'thumbs-down-outline';
-      default: return 'help-circle-outline';
+      case 'SUCCESS':
+        return 'checkmark-circle';
+      case 'PENDING':
+        return 'hourglass-outline';
+      case 'FAILED':
+        return 'close-circle';
+      case 'CANCELLED':
+        return 'remove-circle-outline';
+      case 'REJECTED':
+        return 'thumbs-down-outline';
+      default:
+        return 'help-circle-outline';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'SUCCESS': return '#27ae60';
-      case 'PENDING': return '#f39c12';
-      case 'FAILED': return '#e74c3c';
-      case 'CANCELLED': return '#95a5a6';
-      case 'REJECTED': return '#e74c3c';
-      default: return '#3498db';
+      case 'SUCCESS':
+        return '#27ae60';
+      case 'PENDING':
+        return '#f39c12';
+      case 'FAILED':
+        return '#e74c3c';
+      case 'CANCELLED':
+        return '#95a5a6';
+      case 'REJECTED':
+        return '#e74c3c';
+      default:
+        return '#3498db';
     }
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>Transaction Details</Text>
       </View>
 
       <View style={styles.statusCard}>
-        <Ionicons name={getStatusIcon(transaction.status)} size={48} color={getStatusColor(transaction.status)} />
-        <Text style={[styles.statusText, { color: getStatusColor(transaction.status) }]}>
+        <Ionicons
+          name={getStatusIcon(transaction.status)}
+          size={48}
+          color={getStatusColor(transaction.status)}
+        />
+        <Text
+          style={[
+            styles.statusText,
+            { color: getStatusColor(transaction.status) },
+          ]}
+        >
           {transaction.status}
         </Text>
-        <Text style={styles.dateText}>{new Date(transaction.created_at).toLocaleString()}</Text>
+        <Text style={styles.dateText}>
+          {new Date(transaction.created_at).toLocaleString()}
+        </Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Summary</Text>
         <DetailRow label="Type" value={transaction.type} />
-        <DetailRow label="Amount" value={formatCurrency(transaction.amount, transaction.currency)} />
+        <DetailRow
+          label="Amount"
+          value={formatCurrency(transaction.amount, transaction.currency)}
+        />
         {transaction.type === 'EXCHANGE' && (
           <>
-            <DetailRow label="From" value={formatCurrency(transaction.amount, transaction.from_currency!)} />
-            <DetailRow label="To" value={formatCurrency(transaction.converted_amount!, transaction.to_currency!)} />
-            <DetailRow label="Rate" value={`1 ${transaction.from_currency} = ${transaction.exchange_rate} ${transaction.to_currency}`} />
+            <DetailRow
+              label="From"
+              value={formatCurrency(
+                transaction.amount,
+                transaction.from_currency!
+              )}
+            />
+            <DetailRow
+              label="To"
+              value={formatCurrency(
+                transaction.converted_amount!,
+                transaction.to_currency!
+              )}
+            />
+            <DetailRow
+              label="Rate"
+              value={`1 ${transaction.from_currency} = ${transaction.exchange_rate} ${transaction.to_currency}`}
+            />
           </>
         )}
       </View>
@@ -85,17 +134,26 @@ export default function TransactionDetailsScreen() {
         <Text style={styles.sectionTitle}>Details</Text>
         <DetailRow label="Transaction ID" value={transaction.id} />
         {transaction.reference_number && (
-          <DetailRow label="Reference No." value={transaction.reference_number} />
+          <DetailRow
+            label="Reference No."
+            value={transaction.reference_number}
+          />
         )}
         {transaction.processed_at && (
-          <DetailRow label="Processed At" value={new Date(transaction.processed_at).toLocaleString()} />
+          <DetailRow
+            label="Processed At"
+            value={new Date(transaction.processed_at).toLocaleString()}
+          />
         )}
       </View>
 
       {transaction.screenshot_url && (
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Screenshot</Text>
-          <Image source={{ uri: transaction.screenshot_url }} style={styles.screenshot} />
+          <Image
+            source={{ uri: transaction.screenshot_url }}
+            style={styles.screenshot}
+          />
         </View>
       )}
 
@@ -107,7 +165,7 @@ export default function TransactionDetailsScreen() {
       )}
 
       {transaction.type === 'DEPOSIT' && (
-        <CustomButton 
+        <CustomButton
           title="Repeat Deposit"
           onPress={() => router.push('/(tabs)/deposit')}
           style={{ marginTop: 16 }}
@@ -117,7 +175,7 @@ export default function TransactionDetailsScreen() {
   );
 }
 
-const DetailRow = ({ label, value }: { label: string, value: string }) => (
+const DetailRow = ({ label, value }: { label: string; value: string }) => (
   <View style={styles.detailRow}>
     <Text style={styles.detailLabel}>{label}</Text>
     <Text style={styles.detailValue}>{value}</Text>

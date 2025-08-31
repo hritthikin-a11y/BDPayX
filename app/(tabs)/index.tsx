@@ -13,7 +13,7 @@ import { useAuth } from '../../providers/AuthProvider';
 import { formatCurrency } from '../../lib/constants';
 import CustomButton from '../../components/CustomButton';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 
 const { width } = Dimensions.get('window');
@@ -190,7 +190,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/deposit')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#10B981' }]}>
-              <Ionicons name="add" size={14} color="#FFFFFF" />
+              <AntDesign name="plus" size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Deposit</Text>
             <Text style={styles.actionSubtitle}>Add money</Text>
@@ -201,7 +201,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/withdraw')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#EF4444' }]}>
-              <Ionicons name="remove" size={14} color="#FFFFFF" />
+              <AntDesign name="minus" size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Withdraw</Text>
             <Text style={styles.actionSubtitle}>Cash out</Text>
@@ -212,7 +212,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/exchange')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#F59E0B' }]}>
-              <Ionicons name="swap-horizontal" size={14} color="#FFFFFF" />
+              <AntDesign name="swap" size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Exchange</Text>
             <Text style={styles.actionSubtitle}>Convert</Text>
@@ -223,7 +223,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(tabs)/transfer')}
           >
             <View style={[styles.actionIcon, { backgroundColor: '#8B5CF6' }]}>
-              <Ionicons name="send" size={14} color="#FFFFFF" />
+              <AntDesign name="arrowright" size={24} color="#FFFFFF" />
             </View>
             <Text style={styles.actionTitle}>Transfer</Text>
             <Text style={styles.actionSubtitle}>Send money</Text>
@@ -419,12 +419,17 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   actionIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,
+  },
+  iconText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   actionTitle: {
     fontSize: 12,
