@@ -1,6 +1,6 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -13,13 +13,21 @@ export default function TabLayout() {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
           borderTopColor: '#E9ECEF',
-          paddingTop: 8,
           paddingBottom: 8,
-          height: 65,
+          paddingTop: 8,
+          height: 70,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
+          marginTop: 4,
+        },
+        tabBarIconStyle: {
           marginTop: 4,
         },
       }}
@@ -29,34 +37,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={focused ? 'home' : 'home-outline'}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="exchange"
-        options={{
-          title: 'Exchange',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={focused ? 'swap-horizontal' : 'swap-horizontal-outline'}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="transactions"
-        options={{
-          title: 'History',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={focused ? 'list' : 'list-outline'}
-              color={color}
-            />
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={26} color={color} />
           ),
         }}
       />
@@ -65,10 +46,16 @@ export default function TabLayout() {
         options={{
           title: 'Wallet',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={focused ? 'wallet' : 'wallet-outline'}
-              color={color}
-            />
+            <Ionicons name={focused ? 'wallet' : 'wallet-outline'} size={26} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="transactions"
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'list' : 'list-outline'} size={26} color={color} />
           ),
         }}
       />
@@ -77,26 +64,47 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name={focused ? 'person' : 'person-outline'}
-              color={color}
-            />
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={26} color={color} />
           ),
+        }}
+      />
+      {/* Hide these screens from tab bar */}
+      <Tabs.Screen
+        name="add-bank-account"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="bank-accounts"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="deposit"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="withdraw"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="exchange"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="transfer"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
   );
 }
-
-const TabIcon = ({ name, color }: { name: any; color: string }) => (
-  <View style={styles.iconContainer}>
-    <Ionicons name={name} size={24} color={color} />
-  </View>
-);
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

@@ -109,7 +109,7 @@ export default function RegisterScreen() {
                 <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
               </TouchableOpacity>
               <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>Join BDPayX today</Text>
+              <Text style={styles.subtitle}>Start your journey with BDPayX</Text>
             </View>
 
             {/* Form */}
@@ -122,7 +122,7 @@ export default function RegisterScreen() {
                     style={styles.input}
                     value={formData.fullName}
                     onChangeText={(text) => updateFormData('fullName', text)}
-                    placeholder="Enter your full name"
+                    placeholder="Your full name"
                     placeholderTextColor="#7B8794"
                     autoCapitalize="words"
                   />
@@ -130,14 +130,14 @@ export default function RegisterScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email Address</Text>
+                <Text style={styles.label}>Email</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons name="mail-outline" size={20} color="#7B8794" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
                     value={formData.email}
                     onChangeText={(text) => updateFormData('email', text)}
-                    placeholder="Enter your email"
+                    placeholder="your.email@example.com"
                     placeholderTextColor="#7B8794"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -147,14 +147,14 @@ export default function RegisterScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Phone Number</Text>
+                <Text style={styles.label}>Phone</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons name="call-outline" size={20} color="#7B8794" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
                     value={formData.phone}
                     onChangeText={(text) => updateFormData('phone', text)}
-                    placeholder="Enter your phone number"
+                    placeholder="Your phone number"
                     placeholderTextColor="#7B8794"
                     keyboardType="phone-pad"
                   />
@@ -169,7 +169,7 @@ export default function RegisterScreen() {
                     style={styles.input}
                     value={formData.password}
                     onChangeText={(text) => updateFormData('password', text)}
-                    placeholder="Create a password"
+                    placeholder="Create a strong password"
                     placeholderTextColor="#7B8794"
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
@@ -221,24 +221,12 @@ export default function RegisterScreen() {
                 textStyle={styles.registerButtonText}
               />
 
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
-                <View style={styles.dividerLine} />
-              </View>
-
               <View style={styles.loginPrompt}>
                 <Text style={styles.loginText}>Already have an account? </Text>
                 <Link href="/(auth)/login">
                   <Text style={styles.loginLink}>Sign In</Text>
                 </Link>
               </View>
-
-              <Text style={styles.termsText}>
-                By creating an account, you agree to our{' '}
-                <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
-                <Text style={styles.termsLink}>Privacy Policy</Text>
-              </Text>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -260,18 +248,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingTop: 40,
     paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
-    paddingTop: 20,
+    marginBottom: 40,
   },
   backButton: {
     position: 'absolute',
     left: 0,
-    top: 20,
+    top: 0,
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -284,7 +271,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 8,
-    marginTop: 40,
   },
   subtitle: {
     fontSize: 16,
@@ -292,14 +278,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   form: {
-    flex: 1,
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
-    minHeight: 600,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -331,7 +315,7 @@ const styles = StyleSheet.create({
   registerButton: {
     backgroundColor: '#4A90E2',
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 18,
     marginTop: 8,
     marginBottom: 24,
   },
@@ -340,27 +324,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E9ECEF',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 14,
-    color: '#7B8794',
-    fontWeight: '500',
-  },
   loginPrompt: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
   loginText: {
     fontSize: 16,
@@ -368,16 +335,6 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     fontSize: 16,
-    color: '#4A90E2',
-    fontWeight: '600',
-  },
-  termsText: {
-    fontSize: 12,
-    color: '#7B8794',
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  termsLink: {
     color: '#4A90E2',
     fontWeight: '600',
   },

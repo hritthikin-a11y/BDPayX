@@ -18,33 +18,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🚀 Auth Provider initializing...');
+
     // Get initial session
     const getInitialSession = async () => {
       try {
+        console.log('📋 Getting initial session...');
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('📋 Initial session result:', session?.user ? 'User found' : 'No user');
         setUser(session?.user ?? null);
       } catch (error) {
-        console.error('Error getting initial session:', error);
+        console.error('❌ Error getting initial session:', error);
       } finally {
+        console.log('✅ Initial session check completed, setting loading to false');
         setIsLoading(false);
       }
     };
 
     getInitialSession();
 
-    // Listen for auth changes
+    // Listen for auth changes with minimal processing
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event);
+      (event, session) => {
+        console.log('🔐 Auth state changed:', event, session?.user?.email || 'No user');
         setUser(session?.user ?? null);
         setIsLoading(false);
+        console.log('✅ Auth state processed, loading set to false');
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('🧹 Cleaning up auth provider');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    console.log('🔑 Attempting sign in for:', email);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -52,17 +62,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        console.error('❌ Sign in error:', error.message);
         return { success: false, error: error.message };
       }
 
+      console.log('✅ Sign in successful for:', email);
       return { success: true };
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('❌ Sign in unexpected error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
 
   const signUp = async (email: string, password: string, metadata?: any) => {
+    console.log('📝 Attempting sign up for:', email);
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -73,21 +86,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        console.error('❌ Sign up error:', error.message);
         return { success: false, error: error.message };
       }
 
+      console.log('✅ Sign up successful for:', email);
       return { success: true };
     } catch (error) {
-      console.error('Sign up error:', error);
+      console.error('❌ Sign up unexpected error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
 
   const signOut = async () => {
+    console.log('🚪 Signing out...');
     try {
       await supabase.auth.signOut();
+      console.log('✅ Sign out successful');
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error('❌ Sign out error:', error);
     }
   };
 
@@ -117,6 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
   };
 
+  console.log('🔄 Auth Provider rendering, user:', user?.email || 'None', 'loading:', isLoading);
+
   return (
     <AuthContext.Provider value={value}>
       {children}
@@ -124,10 +143,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

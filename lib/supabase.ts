@@ -1,129 +1,51 @@
 import { createClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Database } from '../types/supabase';
 
-const supabaseUrl = 'http://127.0.0.1:54321';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+// Type aliases for easier usage
+export type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
+export type Wallet = Database['public']['Tables']['wallets']['Row'];
+export type UserBankAccount = Database['public']['Tables']['user_bank_accounts']['Row'];
+export type AdminBankAccount = Database['public']['Tables']['admin_bank_accounts']['Row'];
+export type ExchangeRate = Database['public']['Tables']['exchange_rates']['Row'];
+export type Transaction = Database['public']['Tables']['transactions']['Row'];
+export type DepositRequest = Database['public']['Tables']['deposit_requests']['Row'];
+export type WithdrawalRequest = Database['public']['Tables']['withdrawal_requests']['Row'];
+export type ExchangeRequest = Database['public']['Tables']['exchange_requests']['Row'];
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export type TransactionStatus = Database['public']['Enums']['transaction_status'];
+export type CurrencyType = Database['public']['Enums']['currency_type'];
+export type BankType = Database['public']['Enums']['bank_type'];
 
-// Database types
-export interface UserProfile {
-  id: string;
-  user_id: string;
-  full_name: string | null;
-  phone: string | null;
-  is_verified: boolean;
-  kyc_status: string;
-  daily_deposit_limit: number;
-  daily_withdrawal_limit: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
 }
 
-export interface Wallet {
-  id: string;
-  user_id: string;
-  bdt_balance: number;
-  inr_balance: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
 
-export interface UserBankAccount {
-  id: string;
-  user_id: string;
-  account_name: string;
-  account_number: string;
-  bank_name: string;
-  bank_type: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK';
-  currency: 'BDT' | 'INR';
-  is_verified: boolean;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+// Helper function to get the current user ID
+export const getCurrentUserId = async (): Promise<string | null> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id || null;
+};
 
-export interface AdminBankAccount {
-  id: string;
-  account_name: string;
-  account_number: string;
-  bank_name: string;
-  bank_type: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK';
-  currency: 'BDT' | 'INR';
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+// Helper function to ensure user is authenticated
+export const requireAuth = async (): Promise<string> => {
+  const userId = await getCurrentUserId();
+  if (!userId) {
+    throw new Error('User must be authenticated');
+  }
+  return userId;
+};
 
-export interface ExchangeRate {
-  id: string;
-  from_currency: 'BDT' | 'INR';
-  to_currency: 'BDT' | 'INR';
-  rate: number;
-  is_active: boolean;
-  created_at: string;
-}
-
-export interface Transaction {
-  id: string;
-  user_id: string;
-  type: 'DEPOSIT' | 'WITHDRAWAL' | 'EXCHANGE';
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REJECTED';
-  amount: number;
-  currency: 'BDT' | 'INR';
-  from_currency?: 'BDT' | 'INR';
-  to_currency?: 'BDT' | 'INR';
-  exchange_rate?: number;
-  converted_amount?: number;
-  bank_account_id?: string;
-  admin_bank_account_id?: string;
-  reference_number?: string;
-  processed_at?: string;
-  admin_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface DepositRequest {
-  id: string;
-  user_id: string;
-  transaction_id: string;
-  amount: number;
-  currency: 'BDT' | 'INR';
-  sender_name: string;
-  transaction_ref: string;
-  admin_bank_account_id: string;
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REJECTED';
-  admin_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface WithdrawalRequest {
-  id: string;
-  user_id: string;
-  transaction_id: string;
-  amount: number;
-  currency: 'BDT' | 'INR';
-  bank_account_id: string;
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REJECTED';
-  admin_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ExchangeRequest {
-  id: string;
-  user_id: string;
-  transaction_id: string;
-  from_currency: 'BDT' | 'INR';
-  to_currency: 'BDT' | 'INR';
-  from_amount: number;
-  to_amount: number;
-  exchange_rate: number;
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REJECTED';
-  admin_notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+export default supabase;

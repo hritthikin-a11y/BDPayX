@@ -39,11 +39,10 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const result = await signIn(email, password);
-      if (result.success) {
-        router.replace('/(tabs)');
-      } else {
+      if (!result.success) {
         Alert.alert('Login Failed', result.error || 'Invalid credentials');
       }
+      // Let the auth state change handle navigation automatically
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
@@ -72,20 +71,20 @@ export default function LoginScreen() {
                 <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
               </TouchableOpacity>
               <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>Sign in to your account</Text>
+              <Text style={styles.subtitle}>Sign in to continue</Text>
             </View>
 
             {/* Form */}
             <View style={styles.form}>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email Address</Text>
+                <Text style={styles.label}>Email</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons name="mail-outline" size={20} color="#7B8794" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="Enter your email"
+                    placeholder="your.email@example.com"
                     placeholderTextColor="#7B8794"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -102,7 +101,7 @@ export default function LoginScreen() {
                     style={styles.input}
                     value={password}
                     onChangeText={setPassword}
-                    placeholder="Enter your password"
+                    placeholder="Your password"
                     placeholderTextColor="#7B8794"
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
@@ -134,12 +133,6 @@ export default function LoginScreen() {
                 textStyle={styles.loginButtonText}
               />
 
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
-                <View style={styles.dividerLine} />
-              </View>
-
               <View style={styles.signupPrompt}>
                 <Text style={styles.signupText}>Don't have an account? </Text>
                 <Link href="/(auth)/register">
@@ -167,17 +160,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingTop: 40,
+    paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
     marginBottom: 40,
-    paddingTop: 20,
   },
   backButton: {
     position: 'absolute',
     left: 0,
-    top: 20,
+    top: 0,
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -190,7 +183,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 8,
-    marginTop: 40,
   },
   subtitle: {
     fontSize: 16,
@@ -198,11 +190,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   form: {
-    flex: 1,
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
-    minHeight: 400,
   },
   inputGroup: {
     marginBottom: 20,
@@ -246,29 +236,13 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: '#4A90E2',
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 18,
     marginBottom: 24,
   },
   loginButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '700',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E9ECEF',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 14,
-    color: '#7B8794',
-    fontWeight: '500',
   },
   signupPrompt: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,84 +8,64 @@ import CustomButton from '../../components/CustomButton';
 
 const { height } = Dimensions.get('window');
 
+// TODO: Replace this with a real image from your assets
+const backgroundImage = { uri: 'https://images.unsplash.com/photo-1604594849809-dfedbc827105?q=80&w=2940&auto=format&fit=crop' };
+
 export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      <LinearGradient
-        colors={['#4A90E2', '#357ABD', '#2E5A99']}
-        style={styles.gradient}
-      >
-        <View style={styles.content}>
-          {/* Logo Section */}
-          <View style={styles.logoSection}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>💰</Text>
+      <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+          style={styles.gradient}
+        >
+          <View style={styles.content}>
+            {/* Logo Section */}
+            <View style={styles.logoSection}>
+              <View style={styles.logoContainer}>
+                <Text style={styles.logoText}>BDP</Text>
+              </View>
+              <Text style={styles.appName}>BDPayX</Text>
+              <Text style={styles.tagline}>Seamlessly Exchange BDT & INR</Text>
             </View>
-            <Text style={styles.appName}>BDPayX</Text>
-            <Text style={styles.tagline}>Fast & Secure Money Exchange</Text>
-          </View>
 
-          {/* Features Section */}
-          <View style={styles.featuresSection}>
-            <Text style={styles.featuresTitle}>Exchange Money Instantly</Text>
-            <View style={styles.featuresList}>
-              <FeatureItem 
-                icon="🔄" 
-                text="BDT ↔ INR Exchange" 
-              />
-              <FeatureItem 
-                icon="⚡" 
-                text="Instant Transfers" 
-              />
-              <FeatureItem 
-                icon="🔒" 
-                text="Bank-Level Security" 
-              />
-              <FeatureItem 
-                icon="📱" 
-                text="bKash, Nagad & Bank Support" 
-              />
+            {/* Action Buttons */}
+            <View style={styles.actionsSection}>
+              <Link href="/(auth)/register" asChild>
+                <CustomButton
+                  title="Join Now"
+                  onPress={() => {}}
+                  style={styles.primaryButton}
+                  textStyle={styles.primaryButtonText}
+                />
+              </Link>
+              
+              <Link href="/(auth)/login" asChild>
+                <CustomButton
+                  title="Sign In"
+                  onPress={() => {}}
+                  variant="outline"
+                  style={styles.secondaryButton}
+                  textStyle={styles.secondaryButtonText}
+                />
+              </Link>
             </View>
           </View>
-
-          {/* Action Buttons */}
-          <View style={styles.actionsSection}>
-            <Link href="/(auth)/register" asChild>
-              <CustomButton
-                title="Get Started"
-                onPress={() => {}}
-                style={styles.primaryButton}
-                textStyle={styles.primaryButtonText}
-              />
-            </Link>
-            
-            <Link href="/(auth)/login" asChild>
-              <CustomButton
-                title="I Already Have an Account"
-                onPress={() => {}}
-                variant="outline"
-                style={styles.secondaryButton}
-                textStyle={styles.secondaryButtonText}
-              />
-            </Link>
-          </View>
-        </View>
-      </LinearGradient>
+        </LinearGradient>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
 
-const FeatureItem = ({ icon, text }: { icon: string; text: string }) => (
-  <View style={styles.featureItem}>
-    <Text style={styles.featureIcon}>{icon}</Text>
-    <Text style={styles.featureText}>{text}</Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   gradient: {
     flex: 1,
@@ -94,28 +74,30 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: height * 0.15,
+    paddingBottom: height * 0.1,
   },
   logoSection: {
     alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
   },
   logoContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#4A90E2',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
+    borderWidth: 4,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
   logoText: {
-    fontSize: 60,
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   appName: {
-    fontSize: 36,
+    fontSize: 48,
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 8,
@@ -127,64 +109,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
   },
-  featuresSection: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: 40,
-  },
-  featuresTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  featuresList: {
-    gap: 20,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  featureIcon: {
-    fontSize: 24,
-    marginRight: 16,
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '600',
-    flex: 1,
-  },
   actionsSection: {
     gap: 16,
   },
   primaryButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#4A90E2',
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 18,
   },
   primaryButtonText: {
-    color: '#4A90E2',
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '700',
   },
   secondaryButton: {
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: '#4A90E2',
     borderWidth: 2,
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 18,
     backgroundColor: 'transparent',
   },
   secondaryButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
 });

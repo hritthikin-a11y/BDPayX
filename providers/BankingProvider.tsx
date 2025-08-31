@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ApiService } from '../lib/api';
 import { useAuth } from './AuthProvider';
+import { supabase } from '../lib/supabase';
 import type { 
   Wallet, 
   UserBankAccount, 
@@ -22,20 +23,31 @@ interface BankingContextType {
   fetchBankAccounts: () => Promise<void>;
   fetchAdminBankAccounts: () => Promise<void>;
   fetchExchangeRates: () => Promise<void>;
-  addBankAccount: (account: Partial<UserBankAccount>) => Promise<boolean>;
+  addBankAccount: (account: {
+    account_name: string;
+    account_number: string;
+    bank_name: string;
+    bank_type?: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK';
+    currency?: 'BDT' | 'INR';
+  }) => Promise<boolean>;
+  deleteUserBankAccount: (accountId: string) => Promise<boolean>;
   depositRequest: (
+    userId: string,
     amount: number,
     currency: 'BDT' | 'INR',
     senderName: string,
     transactionRef: string,
-    adminBankAccountId: string
+    adminBankAccountId: string,
+    imageUrl: string | null
   ) => Promise<boolean>;
   withdrawRequest: (
+    userId: string,
     amount: number,
     currency: 'BDT' | 'INR',
     bankAccountId: string
   ) => Promise<boolean>;
   exchangeRequest: (
+    userId: string,
     fromCurrency: 'BDT' | 'INR',
     toCurrency: 'BDT' | 'INR',
     fromAmount: number,
@@ -87,13 +99,31 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
 
   const fetchBalance = async () => {
     if (!user) return;
-    
+
     try {
-      const wallet = await ApiService.getUserWallet(user.id);
+      // Try to get user profile first
+      let userProfile = await ApiService.getUserProfile(user.id);
+      
+      // If user profile doesn't exist, create it
+      if (!userProfile) {
+        userProfile = await ApiService.createUserProfile({ 
+          user_id: user.id,
+          full_name: user.user_metadata?.full_name || '',
+          phone: user.user_metadata?.phone || ''
+        });
+      }
+
+      // Get or create wallet
+      let wallet = await ApiService.getUserWallet(user.id);
+      
+      if (!wallet) {
+        wallet = await ApiService.createUserWallet(user.id);
+      }
+
       if (wallet) {
         setBalance({
-          bdt: wallet.bdt_balance,
-          inr: wallet.inr_balance,
+          bdt: wallet.bdt_balance || 0,
+          inr: wallet.inr_balance || 0,
         });
       }
     } catch (error) {
@@ -141,7 +171,13 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const addBankAccount = async (account: Partial<UserBankAccount>): Promise<boolean> => {
+  const addBankAccount = async (account: {
+    account_name: string;
+    account_number: string;
+    bank_name: string;
+    bank_type?: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK';
+    currency?: 'BDT' | 'INR';
+  }): Promise<boolean> => {
     if (!user) return false;
     
     try {
@@ -162,22 +198,23 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
   };
 
   const depositRequest = async (
+    userId: string,
     amount: number,
     currency: 'BDT' | 'INR',
     senderName: string,
     transactionRef: string,
-    adminBankAccountId: string
+    adminBankAccountId: string,
+    imageUrl: string | null
   ): Promise<boolean> => {
-    if (!user) return false;
-    
     try {
       const result = await ApiService.createDepositRequest(
-        user.id,
+        userId,
         amount,
         currency,
         senderName,
         transactionRef,
-        adminBankAccountId
+        adminBankAccountId,
+        imageUrl
       );
 
       if (result) {
@@ -192,15 +229,14 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
   };
 
   const withdrawRequest = async (
+    userId: string,
     amount: number,
     currency: 'BDT' | 'INR',
     bankAccountId: string
   ): Promise<boolean> => {
-    if (!user) return false;
-    
     try {
       const result = await ApiService.createWithdrawalRequest(
-        user.id,
+        userId,
         amount,
         currency,
         bankAccountId
@@ -217,18 +253,31 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const deleteUserBankAccount = async (accountId: string): Promise<boolean> => {
+    try {
+      const result = await ApiService.deleteUserBankAccount(accountId);
+      if (result) {
+        await fetchBankAccounts();
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error deleting bank account:', error);
+      return false;
+    }
+  };
+
   const exchangeRequest = async (
+    userId: string,
     fromCurrency: 'BDT' | 'INR',
     toCurrency: 'BDT' | 'INR',
     fromAmount: number,
     toAmount: number,
     exchangeRate: number
   ): Promise<boolean> => {
-    if (!user) return false;
-    
     try {
       const result = await ApiService.createExchangeRequest(
-        user.id,
+        userId,
         fromCurrency,
         toCurrency,
         fromAmount,
@@ -261,6 +310,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
     fetchAdminBankAccounts,
     fetchExchangeRates,
     addBankAccount,
+    deleteUserBankAccount,
     depositRequest,
     withdrawRequest,
     exchangeRequest,
