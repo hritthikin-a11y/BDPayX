@@ -11,28 +11,24 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Sign Out', 
-          style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await signOut();
-            } catch (error) {
-              console.error('Sign out error:', error);
-              Alert.alert('Error', 'Failed to sign out. Please try again.');
-            } finally {
-              setLoading(false);
-            }
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          setLoading(true);
+          try {
+            await signOut();
+          } catch (error) {
+            console.error('Sign out error:', error);
+            Alert.alert('Error', 'Failed to sign out. Please try again.');
+          } finally {
+            setLoading(false);
           }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -71,8 +67,8 @@ export default function ProfileScreen() {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Member Since</Text>
             <Text style={styles.infoValue}>
-              {user?.created_at 
-                ? new Date(user.created_at).toLocaleDateString() 
+              {user?.created_at
+                ? new Date(user.created_at).toLocaleDateString()
                 : 'Unknown'}
             </Text>
           </View>
@@ -89,12 +85,20 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={20} color="#7B8794" />
           </View>
           <View style={styles.supportOption}>
-            <Ionicons name="chatbubble-ellipses-outline" size={24} color="#4A90E2" />
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={24}
+              color="#4A90E2"
+            />
             <Text style={styles.supportText}>Contact Us</Text>
             <Ionicons name="chevron-forward" size={20} color="#7B8794" />
           </View>
           <View style={styles.supportOption}>
-            <Ionicons name="information-circle-outline" size={24} color="#4A90E2" />
+            <Ionicons
+              name="information-circle-outline"
+              size={24}
+              color="#4A90E2"
+            />
             <Text style={styles.supportText}>About BDPayX</Text>
             <Ionicons name="chevron-forward" size={20} color="#7B8794" />
           </View>

@@ -37,7 +37,11 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={26} color={color} />
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -46,7 +50,11 @@ export default function TabLayout() {
         options={{
           title: 'Wallet',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'wallet' : 'wallet-outline'} size={26} color={color} />
+            <Ionicons
+              name={focused ? 'wallet' : 'wallet-outline'}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -55,7 +63,11 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'list' : 'list-outline'} size={26} color={color} />
+            <Ionicons
+              name={focused ? 'list' : 'list-outline'}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -64,45 +76,70 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={26} color={color} />
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
-      {/* Hide these screens from tab bar */}
+
+      {/* Hide these screens from tab bar - these are accessed via navigation */}
       <Tabs.Screen
         name="add-bank-account"
         options={{
           href: null,
+          title: 'Add Bank Account',
+          headerShown: true,
         }}
       />
       <Tabs.Screen
         name="bank-accounts"
         options={{
           href: null,
+          title: 'Bank Accounts',
+          headerShown: true,
         }}
       />
       <Tabs.Screen
         name="deposit"
         options={{
           href: null,
+          title: 'Deposit',
+          headerShown: true,
         }}
       />
       <Tabs.Screen
         name="withdraw"
         options={{
           href: null,
+          title: 'Withdraw',
+          headerShown: true,
         }}
       />
       <Tabs.Screen
         name="exchange"
         options={{
           href: null,
+          title: 'Currency Exchange',
+          headerShown: true,
         }}
       />
       <Tabs.Screen
         name="transfer"
         options={{
           href: null,
+          title: 'Transfer',
+          headerShown: true,
+        }}
+      />
+      <Tabs.Screen
+        name="transaction-details"
+        options={{
+          href: null,
+          title: 'Transaction Details',
+          headerShown: true,
         }}
       />
     </Tabs>

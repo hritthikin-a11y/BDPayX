@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TextInput, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TextInput,
+  Platform,
+} from 'react-native';
 import { useBanking } from '../../providers/BankingProvider';
 import CustomButton from '../../components/CustomButton';
 import { useRouter } from 'expo-router';
@@ -17,12 +25,16 @@ export default function AddBankAccountScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
     // Validation
-    if (!formData.accountName || !formData.accountNumber || !formData.bankName) {
+    if (
+      !formData.accountName ||
+      !formData.accountNumber ||
+      !formData.bankName
+    ) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -69,7 +81,9 @@ export default function AddBankAccountScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Add Bank Account</Text>
-        <Text style={styles.subtitle}>Add a new bank account to your profile</Text>
+        <Text style={styles.subtitle}>
+          Add a new bank account to your profile
+        </Text>
       </View>
 
       <View style={styles.form}>
@@ -77,7 +91,12 @@ export default function AddBankAccountScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Account Name</Text>
           <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+            <Ionicons
+              name="person-outline"
+              size={20}
+              color="#7B8794"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               value={formData.accountName}
@@ -92,7 +111,12 @@ export default function AddBankAccountScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Account Number</Text>
           <View style={styles.inputContainer}>
-            <Ionicons name="card-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+            <Ionicons
+              name="card-outline"
+              size={20}
+              color="#7B8794"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               value={formData.accountNumber}
@@ -108,7 +132,12 @@ export default function AddBankAccountScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Bank Name</Text>
           <View style={styles.inputContainer}>
-            <Ionicons name="business-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+            <Ionicons
+              name="business-outline"
+              size={20}
+              color="#7B8794"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               value={formData.bankName}
@@ -127,28 +156,40 @@ export default function AddBankAccountScreen() {
               title="bKash"
               onPress={() => handleInputChange('bankType', 'BKASH')}
               variant={formData.bankType === 'BKASH' ? 'primary' : 'outline'}
-              style={[styles.bankTypeButton, formData.bankType === 'BKASH' && styles.activeBankTypeButton]}
+              style={[
+                styles.bankTypeButton,
+                formData.bankType === 'BKASH' && styles.activeBankTypeButton,
+              ]}
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
               title="Nagad"
               onPress={() => handleInputChange('bankType', 'NAGAD')}
               variant={formData.bankType === 'NAGAD' ? 'primary' : 'outline'}
-              style={[styles.bankTypeButton, formData.bankType === 'NAGAD' && styles.activeBankTypeButton]}
+              style={[
+                styles.bankTypeButton,
+                formData.bankType === 'NAGAD' && styles.activeBankTypeButton,
+              ]}
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
               title="Rocket"
               onPress={() => handleInputChange('bankType', 'ROCKET')}
               variant={formData.bankType === 'ROCKET' ? 'primary' : 'outline'}
-              style={[styles.bankTypeButton, formData.bankType === 'ROCKET' && styles.activeBankTypeButton]}
+              style={[
+                styles.bankTypeButton,
+                formData.bankType === 'ROCKET' && styles.activeBankTypeButton,
+              ]}
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
               title="Bank"
               onPress={() => handleInputChange('bankType', 'BANK')}
               variant={formData.bankType === 'BANK' ? 'primary' : 'outline'}
-              style={[styles.bankTypeButton, formData.bankType === 'BANK' && styles.activeBankTypeButton]}
+              style={[
+                styles.bankTypeButton,
+                formData.bankType === 'BANK' && styles.activeBankTypeButton,
+              ]}
               textStyle={styles.bankTypeButtonText}
             />
           </View>

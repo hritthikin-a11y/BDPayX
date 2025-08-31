@@ -1,22 +1,42 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TextInput, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TextInput,
+  Platform,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { useBanking } from '../../providers/BankingProvider';
 import { formatCurrency, validateAmount } from '../../lib/constants';
 import CustomButton from '../../components/CustomButton';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+const { width } = Dimensions.get('window');
+
 export default function TransferScreen() {
+  const { balance } = useBanking();
   const router = useRouter();
   const [formData, setFormData] = useState({
     amount: '',
     recipient: '',
     note: '',
+    currency: 'BDT' as 'BDT' | 'INR',
   });
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const getAvailableBalance = () => {
+    const currentBalance =
+      formData.currency === 'BDT' ? balance?.bdt : balance?.inr;
+    return currentBalance || 0;
   };
 
   const handleSubmit = async () => {
@@ -32,91 +52,204 @@ export default function TransferScreen() {
       return;
     }
 
-    const amountError = validateAmount(amount, 'TRANSFER', 'BDT');
+    // Check if user has sufficient balance
+    const currentBalance = getAvailableBalance();
+    if (currentBalance < amount) {
+      Alert.alert('Error', `Insufficient ${formData.currency} balance`);
+      return;
+    }
+
+    const amountError = validateAmount(amount, 'TRANSFER', formData.currency);
     if (amountError) {
       Alert.alert('Error', amountError);
       return;
     }
 
     Alert.alert(
-      'Feature Coming Soon',
-      'Peer-to-peer transfers will be available in a future update.',
-      [{ text: 'OK' }]
+      'Transfer Preview',
+      `Send ${formatCurrency(amount, formData.currency)} to ${
+        formData.recipient
+      }?\n\n${formData.note ? `Note: ${formData.note}` : ''}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Send',
+          onPress: () => {
+            Alert.alert(
+              'Feature Coming Soon',
+              'Peer-to-peer transfers will be available in a future update.',
+              [{ text: 'OK' }]
+            );
+          },
+        },
+      ]
     );
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Transfer Money</Text>
-        <Text style={styles.subtitle}>Send money to other BDPayX users</Text>
+        <Text style={styles.headerTitle}>Transfer Money</Text>
+        <Text style={styles.headerSubtitle}>
+          Send money to BDPayX users instantly
+        </Text>
       </View>
 
-      <View style={styles.form}>
+      {/* Balance Card */}
+      <View style={styles.balanceCard}>
+        <View style={styles.balanceHeader}>
+          <Text style={styles.balanceTitle}>Available Balance</Text>
+          <View style={styles.currencySelector}>
+            <TouchableOpacity
+              style={[
+                styles.currencyOption,
+                formData.currency === 'BDT' && styles.activeCurrencyOption,
+              ]}
+              onPress={() => handleInputChange('currency', 'BDT')}
+            >
+              <Text
+                style={[
+                  styles.currencyText,
+                  formData.currency === 'BDT' && styles.activeCurrencyText,
+                ]}
+              >
+                BDT
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.currencyOption,
+                formData.currency === 'INR' && styles.activeCurrencyOption,
+              ]}
+              onPress={() => handleInputChange('currency', 'INR')}
+            >
+              <Text
+                style={[
+                  styles.currencyText,
+                  formData.currency === 'INR' && styles.activeCurrencyText,
+                ]}
+              >
+                INR
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <Text style={styles.balanceAmount}>
+          {formatCurrency(getAvailableBalance(), formData.currency)}
+        </Text>
+      </View>
+
+      {/* Transfer Form */}
+      <View style={styles.formCard}>
         {/* Amount Input */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Amount (BDT)</Text>
+          <Text style={styles.label}>Amount</Text>
           <View style={styles.inputContainer}>
-            <Text style={styles.currencySymbol}>৳</Text>
+            <Text style={styles.currencySymbol}>
+              {formData.currency === 'BDT' ? '৳' : '₹'}
+            </Text>
             <TextInput
               style={styles.input}
               value={formData.amount}
               onChangeText={(text) => handleInputChange('amount', text)}
               placeholder="0.00"
               keyboardType="decimal-pad"
-              placeholderTextColor="#7B8794"
+              placeholderTextColor="#94A3B8"
             />
           </View>
         </View>
 
-        {/* Recipient */}
+        {/* Recipient Input */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Recipient</Text>
           <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+            <View style={styles.inputIcon}>
+              <Ionicons name="person" size={20} color="#64748B" />
+            </View>
             <TextInput
               style={styles.input}
               value={formData.recipient}
               onChangeText={(text) => handleInputChange('recipient', text)}
-              placeholder="Enter recipient's email or phone"
-              placeholderTextColor="#7B8794"
+              placeholder="Email or phone number"
+              placeholderTextColor="#94A3B8"
+              autoCapitalize="none"
             />
           </View>
         </View>
 
-        {/* Note (Optional) */}
+        {/* Note Input */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Note (Optional)</Text>
-          <View style={[styles.inputContainer, styles.textAreaContainer]}>
+          <View style={[styles.inputContainer, styles.noteContainer]}>
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[styles.input, styles.noteInput]}
               value={formData.note}
               onChangeText={(text) => handleInputChange('note', text)}
               placeholder="Add a note to your transfer"
-              placeholderTextColor="#7B8794"
+              placeholderTextColor="#94A3B8"
               multiline
               numberOfLines={3}
+              textAlignVertical="top"
             />
+          </View>
+        </View>
+
+        {/* Quick Contact Options */}
+        <View style={styles.quickContacts}>
+          <Text style={styles.quickContactsTitle}>Quick Send</Text>
+          <View style={styles.contactGrid}>
+            <TouchableOpacity style={styles.contactOption}>
+              <View style={styles.contactIcon}>
+                <Ionicons name="scan" size={20} color="#3B82F6" />
+              </View>
+              <Text style={styles.contactText}>QR Code</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.contactOption}>
+              <View style={styles.contactIcon}>
+                <Ionicons name="people" size={20} color="#3B82F6" />
+              </View>
+              <Text style={styles.contactText}>Contacts</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.contactOption}>
+              <View style={styles.contactIcon}>
+                <Ionicons name="time" size={20} color="#3B82F6" />
+              </View>
+              <Text style={styles.contactText}>Recent</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Info Box */}
         <View style={styles.infoBox}>
-          <Ionicons name="information-circle-outline" size={24} color="#4A90E2" />
+          <View style={styles.infoIcon}>
+            <Ionicons name="information-circle" size={20} color="#3B82F6" />
+          </View>
           <Text style={styles.infoText}>
-            This feature allows you to send money to other BDPayX users instantly. 
-            The recipient must have a BDPayX account.
+            Transfers are instant and free between BDPayX users. The recipient
+            will be notified immediately.
           </Text>
         </View>
 
-        {/* Submit Button */}
-        <CustomButton
-          title="Continue"
+        {/* Continue Button */}
+        <TouchableOpacity
+          style={[
+            styles.continueButton,
+            (!formData.amount || !formData.recipient || loading) &&
+              styles.disabledButton,
+          ]}
           onPress={handleSubmit}
-          loading={loading}
-          style={styles.submitButton}
-          textStyle={styles.submitButtonText}
-        />
+          disabled={!formData.amount || !formData.recipient || loading}
+        >
+          {loading ? (
+            <Text style={styles.continueButtonText}>Processing...</Text>
+          ) : (
+            <>
+              <Ionicons name="send" size={20} color="#FFFFFF" />
+              <Text style={styles.continueButtonText}>Continue Transfer</Text>
+            </>
+          )}
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -125,92 +258,206 @@ export default function TransferScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F1F5F9',
   },
   header: {
-    padding: 24,
     backgroundColor: '#FFFFFF',
-    marginBottom: 16,
+    padding: 20,
+    paddingTop: 60,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2E3A59',
-    marginBottom: 8,
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#7B8794',
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#64748B',
   },
-  form: {
+  balanceCard: {
     backgroundColor: '#FFFFFF',
-    padding: 24,
+    marginHorizontal: 16,
+    marginTop: 16,
     borderRadius: 16,
-    margin: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  balanceTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  currencySelector: {
+    flexDirection: 'row',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    padding: 4,
+  },
+  currencyOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  activeCurrencyOption: {
+    backgroundColor: '#3B82F6',
+  },
+  currencyText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  activeCurrencyText: {
+    color: '#FFFFFF',
+  },
+  balanceAmount: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  formCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
   inputGroup: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2E3A59',
+    color: '#1E293B',
     marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F8FAFC',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: Platform.OS === 'ios' ? 16 : 12,
+    padding: 16,
     borderWidth: 1,
-    borderColor: '#E9ECEF',
+    borderColor: '#E2E8F0',
   },
-  textAreaContainer: {
+  noteContainer: {
     alignItems: 'flex-start',
+    minHeight: 80,
   },
   inputIcon: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 12,
   },
   currencySymbol: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#2E3A59',
-    marginRight: 8,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginRight: 12,
   },
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#2E3A59',
+    color: '#1E293B',
   },
-  textArea: {
+  noteInput: {
     textAlignVertical: 'top',
-    paddingTop: 8,
-    minHeight: 80,
+    minHeight: 60,
   },
-  infoBox: {
-    backgroundColor: '#F8F9FA',
+  quickContacts: {
+    marginBottom: 20,
+  },
+  quickContactsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 12,
+  },
+  contactGrid: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  contactOption: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
     borderRadius: 12,
     padding: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  contactIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  contactText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  infoBox: {
     flexDirection: 'row',
-    marginBottom: 24,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+  },
+  infoIcon: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   infoText: {
     flex: 1,
     fontSize: 14,
-    color: '#7B8794',
-    marginLeft: 12,
+    color: '#64748B',
+    lineHeight: 20,
   },
-  submitButton: {
-    backgroundColor: '#4A90E2',
+  continueButton: {
+    backgroundColor: '#3B82F6',
     borderRadius: 12,
-    paddingVertical: 18,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+  disabledButton: {
+    backgroundColor: '#94A3B8',
+  },
+  continueButtonText: {
+    fontSize: 16,
     fontWeight: '700',
-    textAlign: 'center',
+    color: '#FFFFFF',
   },
 });

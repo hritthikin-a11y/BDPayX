@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TextInput, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TextInput,
+  Platform,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { useBanking } from '../../providers/BankingProvider';
 import { useAuth } from '../../providers/AuthProvider';
 import { formatCurrency, validateAmount } from '../../lib/constants';
@@ -7,8 +17,11 @@ import CustomButton from '../../components/CustomButton';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+const { width } = Dimensions.get('window');
+
 export default function ExchangeScreen() {
-  const { exchangeRates, exchangeRequest, fetchBalance } = useBanking();
+  const { exchangeRates, exchangeRequest, fetchBalance, balance } =
+    useBanking();
   const { user } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -24,7 +37,9 @@ export default function ExchangeScreen() {
   useEffect(() => {
     if (exchangeRates.length > 0) {
       const rate = exchangeRates.find(
-        r => r.from_currency === formData.fromCurrency && r.to_currency === formData.toCurrency
+        (r) =>
+          r.from_currency === formData.fromCurrency &&
+          r.to_currency === formData.toCurrency
       );
       setExchangeRate(rate ? rate.rate : null);
     }
@@ -36,20 +51,22 @@ export default function ExchangeScreen() {
       const fromAmount = parseFloat(formData.fromAmount);
       if (!isNaN(fromAmount)) {
         const toAmount = fromAmount * exchangeRate;
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           toAmount: toAmount.toFixed(2),
         }));
       }
+    } else {
+      setFormData((prev) => ({ ...prev, toAmount: '' }));
     }
   }, [formData.fromAmount, exchangeRate]);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const swapCurrencies = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       fromCurrency: prev.toCurrency,
       toCurrency: prev.fromCurrency,
       fromAmount: '',
@@ -66,7 +83,7 @@ export default function ExchangeScreen() {
 
     const fromAmount = parseFloat(formData.fromAmount);
     const toAmount = parseFloat(formData.toAmount);
-    
+
     if (isNaN(fromAmount) || isNaN(toAmount)) {
       Alert.alert('Error', 'Please enter valid amounts');
       return;
@@ -77,7 +94,19 @@ export default function ExchangeScreen() {
       return;
     }
 
-    const amountError = validateAmount(fromAmount, 'EXCHANGE', formData.fromCurrency);
+    // Check if user has sufficient balance
+    const currentBalance =
+      formData.fromCurrency === 'BDT' ? balance?.bdt : balance?.inr;
+    if (!currentBalance || currentBalance < fromAmount) {
+      Alert.alert('Error', `Insufficient ${formData.fromCurrency} balance`);
+      return;
+    }
+
+    const amountError = validateAmount(
+      fromAmount,
+      'EXCHANGE',
+      formData.fromCurrency
+    );
     if (amountError) {
       Alert.alert('Error', amountError);
       return;
@@ -97,8 +126,11 @@ export default function ExchangeScreen() {
       if (success) {
         await fetchBalance();
         Alert.alert(
-          'Exchange Request Submitted',
-          'Your exchange request has been submitted successfully. We will process it shortly.',
+          'Exchange Successful',
+          `Successfully exchanged ${formatCurrency(
+            fromAmount,
+            formData.fromCurrency
+          )} to ${formatCurrency(toAmount, formData.toCurrency)}`,
           [
             {
               text: 'OK',
@@ -107,7 +139,10 @@ export default function ExchangeScreen() {
           ]
         );
       } else {
-        Alert.alert('Error', 'Failed to submit exchange request. Please try again.');
+        Alert.alert(
+          'Error',
+          'Failed to process exchange request. Please try again.'
+        );
       }
     } catch (error) {
       console.error('Exchange error:', error);
@@ -117,35 +152,88 @@ export default function ExchangeScreen() {
     }
   };
 
+  const getAvailableBalance = () => {
+    const currentBalance =
+      formData.fromCurrency === 'BDT' ? balance?.bdt : balance?.inr;
+    return currentBalance || 0;
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Exchange Currency</Text>
-        <Text style={styles.subtitle}>Convert between BDT and INR</Text>
+        <Text style={styles.headerTitle}>Currency Exchange</Text>
+        <Text style={styles.headerSubtitle}>
+          Convert between BDT and INR instantly
+        </Text>
       </View>
 
-      <View style={styles.form}>
-        {/* From Currency */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>From</Text>
-          <View style={styles.currencySelector}>
-            <CustomButton
-              title="BDT"
-              onPress={() => handleInputChange('fromCurrency', 'BDT')}
-              variant={formData.fromCurrency === 'BDT' ? 'primary' : 'outline'}
-              style={[styles.currencyButton, formData.fromCurrency === 'BDT' && styles.activeCurrencyButton]}
-              textStyle={styles.currencyButtonText}
-            />
-            <CustomButton
-              title="INR"
-              onPress={() => handleInputChange('fromCurrency', 'INR')}
-              variant={formData.fromCurrency === 'INR' ? 'primary' : 'outline'}
-              style={[styles.currencyButton, formData.fromCurrency === 'INR' && styles.activeCurrencyButton]}
-              textStyle={styles.currencyButtonText}
-            />
+      {/* Exchange Rate Card */}
+      {exchangeRate && (
+        <View style={styles.rateCard}>
+          <View style={styles.rateHeader}>
+            <View style={styles.rateIcon}>
+              <Ionicons name="trending-up" size={20} color="#10B981" />
+            </View>
+            <View>
+              <Text style={styles.rateTitle}>Current Rate</Text>
+              <Text style={styles.rateSubtitle}>Live exchange rate</Text>
+            </View>
           </View>
+          <Text style={styles.rateText}>
+            1 {formData.fromCurrency} = {exchangeRate.toFixed(6)}{' '}
+            {formData.toCurrency}
+          </Text>
+        </View>
+      )}
+
+      {/* Exchange Form */}
+      <View style={styles.formCard}>
+        {/* From Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>From</Text>
+
+          {/* Currency Selector */}
+          <View style={styles.currencySelector}>
+            <TouchableOpacity
+              style={[
+                styles.currencyOption,
+                formData.fromCurrency === 'BDT' && styles.activeCurrencyOption,
+              ]}
+              onPress={() => handleInputChange('fromCurrency', 'BDT')}
+            >
+              <Text style={styles.currencySymbol}>৳</Text>
+              <Text
+                style={[
+                  styles.currencyText,
+                  formData.fromCurrency === 'BDT' && styles.activeCurrencyText,
+                ]}
+              >
+                BDT
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.currencyOption,
+                formData.fromCurrency === 'INR' && styles.activeCurrencyOption,
+              ]}
+              onPress={() => handleInputChange('fromCurrency', 'INR')}
+            >
+              <Text style={styles.currencySymbol}>₹</Text>
+              <Text
+                style={[
+                  styles.currencyText,
+                  formData.fromCurrency === 'INR' && styles.activeCurrencyText,
+                ]}
+              >
+                INR
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Amount Input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.currencySymbol}>
+            <Text style={styles.inputSymbol}>
               {formData.fromCurrency === 'BDT' ? '৳' : '₹'}
             </Text>
             <TextInput
@@ -154,75 +242,94 @@ export default function ExchangeScreen() {
               onChangeText={(text) => handleInputChange('fromAmount', text)}
               placeholder="0.00"
               keyboardType="decimal-pad"
-              placeholderTextColor="#7B8794"
+              placeholderTextColor="#94A3B8"
             />
           </View>
+
+          {/* Available Balance */}
+          <Text style={styles.balanceText}>
+            Available:{' '}
+            {formatCurrency(getAvailableBalance(), formData.fromCurrency)}
+          </Text>
         </View>
 
         {/* Swap Button */}
         <View style={styles.swapContainer}>
-          <CustomButton
-            title=""
-            onPress={swapCurrencies}
-            variant="outline"
-            style={styles.swapButton}
-            leftIcon={<Ionicons name="swap-vertical" size={24} color="#4A90E2" />}
-          />
+          <TouchableOpacity style={styles.swapButton} onPress={swapCurrencies}>
+            <Ionicons name="swap-vertical" size={24} color="#3B82F6" />
+          </TouchableOpacity>
         </View>
 
-        {/* To Currency */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>To</Text>
+        {/* To Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>To</Text>
+
+          {/* Currency Selector */}
           <View style={styles.currencySelector}>
-            <CustomButton
-              title="BDT"
+            <TouchableOpacity
+              style={[
+                styles.currencyOption,
+                formData.toCurrency === 'BDT' && styles.activeCurrencyOption,
+              ]}
               onPress={() => handleInputChange('toCurrency', 'BDT')}
-              variant={formData.toCurrency === 'BDT' ? 'primary' : 'outline'}
-              style={[styles.currencyButton, formData.toCurrency === 'BDT' && styles.activeCurrencyButton]}
-              textStyle={styles.currencyButtonText}
-            />
-            <CustomButton
-              title="INR"
+            >
+              <Text style={styles.currencySymbol}>৳</Text>
+              <Text
+                style={[
+                  styles.currencyText,
+                  formData.toCurrency === 'BDT' && styles.activeCurrencyText,
+                ]}
+              >
+                BDT
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.currencyOption,
+                formData.toCurrency === 'INR' && styles.activeCurrencyOption,
+              ]}
               onPress={() => handleInputChange('toCurrency', 'INR')}
-              variant={formData.toCurrency === 'INR' ? 'primary' : 'outline'}
-              style={[styles.currencyButton, formData.toCurrency === 'INR' && styles.activeCurrencyButton]}
-              textStyle={styles.currencyButtonText}
-            />
+            >
+              <Text style={styles.currencySymbol}>₹</Text>
+              <Text
+                style={[
+                  styles.currencyText,
+                  formData.toCurrency === 'INR' && styles.activeCurrencyText,
+                ]}
+              >
+                INR
+              </Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.currencySymbol}>
+
+          {/* Amount Display */}
+          <View style={[styles.inputContainer, styles.outputContainer]}>
+            <Text style={styles.inputSymbol}>
               {formData.toCurrency === 'BDT' ? '৳' : '₹'}
             </Text>
-            <TextInput
-              style={styles.input}
-              value={formData.toAmount}
-              onChangeText={(text) => handleInputChange('toAmount', text)}
-              placeholder="0.00"
-              keyboardType="decimal-pad"
-              placeholderTextColor="#7B8794"
-              editable={false}
-            />
+            <Text style={styles.outputText}>{formData.toAmount || '0.00'}</Text>
           </View>
         </View>
 
-        {/* Exchange Rate */}
-        {exchangeRate && (
-          <View style={styles.rateContainer}>
-            <Text style={styles.rateText}>
-              1 {formData.fromCurrency} = {exchangeRate.toFixed(6)} {formData.toCurrency}
-            </Text>
-          </View>
-        )}
-
-        {/* Submit Button */}
-        <CustomButton
-          title="Exchange Currency"
+        {/* Exchange Button */}
+        <TouchableOpacity
+          style={[
+            styles.exchangeButton,
+            (!exchangeRate || !formData.fromAmount || loading) &&
+              styles.disabledButton,
+          ]}
           onPress={handleSubmit}
-          loading={loading}
-          disabled={!exchangeRate}
-          style={styles.submitButton}
-          textStyle={styles.submitButtonText}
-        />
+          disabled={!exchangeRate || !formData.fromAmount || loading}
+        >
+          {loading ? (
+            <Text style={styles.exchangeButtonText}>Processing...</Text>
+          ) : (
+            <>
+              <Ionicons name="swap-horizontal" size={20} color="#FFFFFF" />
+              <Text style={styles.exchangeButtonText}>Exchange Currency</Text>
+            </>
+          )}
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -231,109 +338,188 @@ export default function ExchangeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F1F5F9',
   },
   header: {
-    padding: 24,
     backgroundColor: '#FFFFFF',
-    marginBottom: 16,
+    padding: 20,
+    paddingTop: 60,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2E3A59',
-    marginBottom: 8,
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#7B8794',
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#64748B',
   },
-  form: {
+  rateCard: {
     backgroundColor: '#FFFFFF',
-    padding: 24,
+    marginHorizontal: 16,
+    marginTop: 16,
     borderRadius: 16,
-    margin: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  inputGroup: {
-    marginBottom: 24,
+  rateHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  label: {
+  rateIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#DCFCE7',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  rateTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2E3A59',
-    marginBottom: 8,
+    color: '#1E293B',
+    marginBottom: 2,
+  },
+  rateSubtitle: {
+    fontSize: 12,
+    color: '#64748B',
+  },
+  rateText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#10B981',
+    textAlign: 'center',
+  },
+  formCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 16,
   },
   currencySelector: {
     flexDirection: 'row',
     gap: 12,
     marginBottom: 16,
   },
-  currencyButton: {
+  currencyOption: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F8FAFC',
     borderRadius: 12,
-    paddingVertical: 16,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    gap: 8,
   },
-  activeCurrencyButton: {
-    backgroundColor: '#4A90E2',
+  activeCurrencyOption: {
+    backgroundColor: '#EFF6FF',
+    borderColor: '#3B82F6',
   },
-  currencyButtonText: {
+  currencySymbol: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  currencyText: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#64748B',
+  },
+  activeCurrencyText: {
+    color: '#3B82F6',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F8FAFC',
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: Platform.OS === 'ios' ? 16 : 12,
+    padding: 16,
     borderWidth: 1,
-    borderColor: '#E9ECEF',
+    borderColor: '#E2E8F0',
   },
-  currencySymbol: {
+  outputContainer: {
+    backgroundColor: '#F1F5F9',
+  },
+  inputSymbol: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#2E3A59',
-    marginRight: 8,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginRight: 12,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: '#2E3A59',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  outputText: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#10B981',
+  },
+  balanceText: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 8,
+    textAlign: 'right',
   },
   swapContainer: {
     alignItems: 'center',
     marginVertical: 16,
   },
   swapButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    padding: 0,
-    minWidth: 0,
-    minHeight: 0,
-  },
-  rateContainer: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
+    width: 48,
+    height: 48,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 24,
     alignItems: 'center',
-    marginBottom: 24,
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#3B82F6',
   },
-  rateText: {
-    fontSize: 16,
-    color: '#7B8794',
-    fontWeight: '500',
-  },
-  submitButton: {
-    backgroundColor: '#4A90E2',
+  exchangeButton: {
+    backgroundColor: '#3B82F6',
     borderRadius: 12,
-    paddingVertical: 18,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 8,
   },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+  disabledButton: {
+    backgroundColor: '#94A3B8',
+  },
+  exchangeButtonText: {
+    fontSize: 16,
     fontWeight: '700',
-    textAlign: 'center',
+    color: '#FFFFFF',
   },
 });

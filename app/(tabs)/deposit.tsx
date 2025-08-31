@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TextInput, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TextInput,
+  Platform,
+} from 'react-native';
 import { useBanking } from '../../providers/BankingProvider';
 import { useAuth } from '../../providers/AuthProvider';
 import { formatCurrency, validateAmount } from '../../lib/constants';
@@ -22,25 +30,29 @@ export default function DepositScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const selectImage = async () => {
     try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
       if (permissionResult.granted === false) {
-        Alert.alert('Permission required', 'Permission to access camera roll is required!');
+        Alert.alert(
+          'Permission required',
+          'Permission to access camera roll is required!'
+        );
         return;
       }
-      
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.5,
       });
-      
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setSelectedImage(result.assets[0].uri);
       }
@@ -52,7 +64,12 @@ export default function DepositScreen() {
 
   const handleSubmit = async () => {
     // Validation
-    if (!formData.amount || !formData.senderName || !formData.transactionRef || !formData.adminBankAccountId) {
+    if (
+      !formData.amount ||
+      !formData.senderName ||
+      !formData.transactionRef ||
+      !formData.adminBankAccountId
+    ) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -99,7 +116,10 @@ export default function DepositScreen() {
           ]
         );
       } else {
-        Alert.alert('Error', 'Failed to submit deposit request. Please try again.');
+        Alert.alert(
+          'Error',
+          'Failed to submit deposit request. Please try again.'
+        );
       }
     } catch (error) {
       console.error('Deposit error:', error);
@@ -137,7 +157,12 @@ export default function DepositScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Sender Name</Text>
           <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+            <Ionicons
+              name="person-outline"
+              size={20}
+              color="#7B8794"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               value={formData.senderName}
@@ -152,7 +177,12 @@ export default function DepositScreen() {
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Transaction Reference</Text>
           <View style={styles.inputContainer}>
-            <Ionicons name="receipt-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+            <Ionicons
+              name="receipt-outline"
+              size={20}
+              color="#7B8794"
+              style={styles.inputIcon}
+            />
             <TextInput
               style={styles.input}
               value={formData.transactionRef}
@@ -166,29 +196,39 @@ export default function DepositScreen() {
         {/* Admin Bank Account */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Deposit To</Text>
-          {adminBankAccounts.filter(acc => acc.currency === 'BDT').map(account => (
-            <View key={account.id} style={styles.bankOption}>
-              <CustomButton
-                title={`${account.bank_name} (${account.account_number})`}
-                onPress={() => handleInputChange('adminBankAccountId', account.id)}
-                variant={formData.adminBankAccountId === account.id ? 'primary' : 'outline'}
-                style={styles.bankButton}
-                textStyle={styles.bankButtonText}
-              />
-            </View>
-          ))}
+          {adminBankAccounts
+            .filter((acc) => acc.currency === 'BDT')
+            .map((account) => (
+              <View key={account.id} style={styles.bankOption}>
+                <CustomButton
+                  title={`${account.bank_name} (${account.account_number})`}
+                  onPress={() =>
+                    handleInputChange('adminBankAccountId', account.id)
+                  }
+                  variant={
+                    formData.adminBankAccountId === account.id
+                      ? 'primary'
+                      : 'outline'
+                  }
+                  style={styles.bankButton}
+                  textStyle={styles.bankButtonText}
+                />
+              </View>
+            ))}
         </View>
 
         {/* Screenshot Upload */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Transaction Screenshot</Text>
           <CustomButton
-            title={selectedImage ? "Change Screenshot" : "Upload Screenshot"}
+            title={selectedImage ? 'Change Screenshot' : 'Upload Screenshot'}
             onPress={selectImage}
             variant="outline"
             style={styles.uploadButton}
             textStyle={styles.uploadButtonText}
-            leftIcon={<Ionicons name="camera-outline" size={20} color="#4A90E2" />}
+            leftIcon={
+              <Ionicons name="camera-outline" size={20} color="#4A90E2" />
+            }
           />
           {selectedImage && (
             <Text style={styles.imageSelectedText}>✓ Image selected</Text>

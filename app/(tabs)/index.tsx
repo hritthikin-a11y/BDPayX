@@ -1,104 +1,252 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { useBanking } from '../../providers/BankingProvider';
 import { useAuth } from '../../providers/AuthProvider';
 import { formatCurrency } from '../../lib/constants';
 import CustomButton from '../../components/CustomButton';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
+
+const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const { balance, loading, fetchAllData } = useBanking();
   const { user } = useAuth();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
+
+  const fetchExchangeRates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('exchange_rates')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      if (!error) {
+        setExchangeRates(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching exchange rates:', error);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchAllData();
+    await fetchExchangeRates();
     setRefreshing(false);
+  };
+
+  const getExchangeRate = (from: string, to: string) => {
+    const rate = exchangeRates.find(
+      (r: any) => r.from_currency === from && r.to_currency === to
+    );
+    return rate ? rate.rate : 0;
   };
 
   return (
     <ScrollView
       style={styles.container}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome back,</Text>
-        <Text style={styles.userName}>{user?.user_metadata?.full_name || 'User'}</Text>
+      {/* Header with Gradient */}
+      <View style={styles.headerGradient}>
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <View>
+              <Text style={styles.welcomeText}>Good morning,</Text>
+              <Text style={styles.userName}>
+                {user?.user_metadata?.full_name || 'User'}
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.profileAvatar}>
+              <Ionicons name="person" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Balance Cards */}
+          <View style={styles.balanceContainer}>
+            <View style={styles.balanceCard}>
+              <View style={styles.balanceHeader}>
+                <Text style={styles.balanceLabel}>Total Balance</Text>
+                <Ionicons name="eye-outline" size={16} color="#8B9DC3" />
+              </View>
+              <Text style={styles.totalBalance}>
+                {loading
+                  ? '•••••'
+                  : balance
+                  ? `৳${(
+                      balance.bdt +
+                      balance.inr * getExchangeRate('INR', 'BDT')
+                    ).toFixed(2)}`
+                  : '৳0.00'}
+              </Text>
+              <View style={styles.currencyBreakdown}>
+                <Text style={styles.currencyItem}>
+                  BDT:{' '}
+                  {loading
+                    ? '•••'
+                    : balance
+                    ? formatCurrency(balance.bdt, 'BDT')
+                    : '৳0.00'}
+                </Text>
+                <Text style={styles.currencyItem}>
+                  INR:{' '}
+                  {loading
+                    ? '•••'
+                    : balance
+                    ? formatCurrency(balance.inr, 'INR')
+                    : '₹0.00'}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
 
-      {/* Balance Cards */}
-      <View style={styles.balanceContainer}>
-        <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>BDT Balance</Text>
-          <Text style={styles.balanceAmount}>
-            {loading ? 'Loading...' : balance ? formatCurrency(balance.bdt, 'BDT') : '৳0.00'}
-          </Text>
+      {/* Exchange Rates Section */}
+      <View style={styles.sectionContainer}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Live Exchange Rates</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/exchange')}>
+            <Text style={styles.seeAllText}>Trade</Text>
+          </TouchableOpacity>
         </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.ratesContainer}
+        >
+          <View style={styles.rateCard}>
+            <View style={styles.rateHeader}>
+              <Text style={styles.ratePair}>BDT → INR</Text>
+              <View style={styles.trendIndicator}>
+                <Ionicons name="trending-up" size={12} color="#10B981" />
+              </View>
+            </View>
+            <Text style={styles.rateValue}>
+              {getExchangeRate('BDT', 'INR').toFixed(4)}
+            </Text>
+            <Text style={styles.rateSubtext}>
+              1 BDT = {getExchangeRate('BDT', 'INR').toFixed(4)} INR
+            </Text>
+          </View>
 
-        <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>INR Balance</Text>
-          <Text style={styles.balanceAmount}>
-            {loading ? 'Loading...' : balance ? formatCurrency(balance.inr, 'INR') : '₹0.00'}
-          </Text>
-        </View>
+          <View style={styles.rateCard}>
+            <View style={styles.rateHeader}>
+              <Text style={styles.ratePair}>INR → BDT</Text>
+              <View style={styles.trendIndicator}>
+                <Ionicons name="trending-up" size={12} color="#10B981" />
+              </View>
+            </View>
+            <Text style={styles.rateValue}>
+              {getExchangeRate('INR', 'BDT').toFixed(2)}
+            </Text>
+            <Text style={styles.rateSubtext}>
+              1 INR = {getExchangeRate('INR', 'BDT').toFixed(2)} BDT
+            </Text>
+          </View>
+
+          <View style={styles.rateCard}>
+            <View style={styles.rateHeader}>
+              <Text style={styles.ratePair}>USD → BDT</Text>
+              <View style={styles.trendIndicator}>
+                <Ionicons name="trending-down" size={12} color="#EF4444" />
+              </View>
+            </View>
+            <Text style={styles.rateValue}>
+              {getExchangeRate('USD', 'BDT').toFixed(0)}
+            </Text>
+            <Text style={styles.rateSubtext}>
+              1 USD = {getExchangeRate('USD', 'BDT').toFixed(0)} BDT
+            </Text>
+          </View>
+        </ScrollView>
       </View>
 
       {/* Quick Actions */}
-      <View style={styles.section}>
+      <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsGrid}>
-          <CustomButton
-            title="Deposit"
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => router.push('/(tabs)/deposit')}
-            style={styles.actionButton}
-            textStyle={styles.actionButtonText}
-            leftIcon={<Ionicons name="add-circle-outline" size={20} color="#FFFFFF" />}
-          />
-          <CustomButton
-            title="Withdraw"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#10B981' }]}>
+              <Ionicons name="add" size={20} color="#FFFFFF" />
+            </View>
+            <Text style={styles.actionTitle}>Deposit</Text>
+            <Text style={styles.actionSubtitle}>Add money</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => router.push('/(tabs)/withdraw')}
-            style={styles.actionButton}
-            textStyle={styles.actionButtonText}
-            leftIcon={<Ionicons name="remove-circle-outline" size={20} color="#FFFFFF" />}
-          />
-          <CustomButton
-            title="Exchange"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#EF4444' }]}>
+              <Ionicons name="remove" size={20} color="#FFFFFF" />
+            </View>
+            <Text style={styles.actionTitle}>Withdraw</Text>
+            <Text style={styles.actionSubtitle}>Cash out</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => router.push('/(tabs)/exchange')}
-            style={styles.actionButton}
-            textStyle={styles.actionButtonText}
-            leftIcon={<Ionicons name="swap-horizontal" size={20} color="#FFFFFF" />}
-          />
-          <CustomButton
-            title="Transfer"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#F59E0B' }]}>
+              <Ionicons name="swap-horizontal" size={20} color="#FFFFFF" />
+            </View>
+            <Text style={styles.actionTitle}>Exchange</Text>
+            <Text style={styles.actionSubtitle}>Convert</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => router.push('/(tabs)/transfer')}
-            style={styles.actionButton}
-            textStyle={styles.actionButtonText}
-            leftIcon={<Ionicons name="send-outline" size={20} color="#FFFFFF" />}
-          />
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#8B5CF6' }]}>
+              <Ionicons name="send" size={20} color="#FFFFFF" />
+            </View>
+            <Text style={styles.actionTitle}>Transfer</Text>
+            <Text style={styles.actionSubtitle}>Send money</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Recent Transactions */}
-      <View style={styles.section}>
+      {/* Recent Activity */}
+      <View style={styles.sectionContainer}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Transactions</Text>
-          <CustomButton
-            title="View All"
-            onPress={() => router.push('/(tabs)/transactions')}
-            variant="ghost"
-            size="small"
-            textStyle={styles.viewAllText}
-          />
+          <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/transactions')}>
+            <Text style={styles.seeAllText}>See all</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.placeholderContainer}>
-          <Ionicons name="document-text-outline" size={48} color="#7B8794" />
-          <Text style={styles.placeholderText}>No recent transactions</Text>
-          <Text style={styles.placeholderSubtext}>Your transactions will appear here</Text>
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIcon}>
+            <Ionicons name="receipt-outline" size={32} color="#94A3B8" />
+          </View>
+          <Text style={styles.emptyTitle}>No transactions yet</Text>
+          <Text style={styles.emptySubtitle}>
+            Your transaction history will appear here
+          </Text>
         </View>
       </View>
     </ScrollView>
@@ -108,58 +256,89 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F1F5F9',
+  },
+  headerGradient: {
+    backgroundColor: '#1E293B',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   header: {
-    padding: 24,
-    paddingTop: 40,
-    backgroundColor: '#FFFFFF',
+    padding: 20,
+    paddingTop: 60,
+    paddingBottom: 30,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   welcomeText: {
-    fontSize: 16,
-    color: '#7B8794',
+    fontSize: 14,
+    color: '#94A3B8',
+    marginBottom: 4,
   },
   userName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2E3A59',
-    marginTop: 4,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
-  balanceContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    gap: 16,
-  },
-  balanceCard: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
+  profileAvatar: {
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+  },
+  balanceContainer: {
+    marginTop: 8,
+  },
+  balanceCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   balanceLabel: {
     fontSize: 14,
-    color: '#7B8794',
-    marginBottom: 8,
+    color: '#8B9DC3',
+    fontWeight: '500',
   },
-  balanceAmount: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2E3A59',
+  totalBalance: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 12,
   },
-  section: {
-    padding: 24,
+  currencyBreakdown: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  currencyItem: {
+    fontSize: 13,
+    color: '#94A3B8',
+    fontWeight: '500',
+  },
+  sectionContainer: {
     backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
     marginTop: 16,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -168,44 +347,116 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2E3A59',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E293B',
   },
-  viewAllText: {
-    color: '#4A90E2',
+  seeAllText: {
+    fontSize: 14,
+    color: '#3B82F6',
     fontWeight: '600',
+  },
+  ratesContainer: {
+    marginBottom: 4,
+  },
+  rateCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 16,
+    marginRight: 12,
+    minWidth: 140,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  rateHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ratePair: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  trendIndicator: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rateValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 4,
+  },
+  rateSubtext: {
+    fontSize: 11,
+    color: '#94A3B8',
   },
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
+    gap: 12,
   },
-  actionButton: {
+  actionCard: {
     flex: 1,
-    minWidth: 140,
-    backgroundColor: '#4A90E2',
-    borderRadius: 12,
-    paddingVertical: 16,
+    minWidth: (width - 68) / 2,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  actionButtonText: {
-    color: '#FFFFFF',
+  actionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  actionTitle: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 4,
   },
-  placeholderContainer: {
+  actionSubtitle: {
+    fontSize: 12,
+    color: '#64748B',
+  },
+  emptyState: {
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 32,
   },
-  placeholderText: {
-    fontSize: 18,
-    color: '#7B8794',
-    marginTop: 16,
-    fontWeight: '500',
+  emptyIcon: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
   },
-  placeholderSubtext: {
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#64748B',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
     fontSize: 14,
-    color: '#7B8794',
-    marginTop: 8,
+    color: '#94A3B8',
+    textAlign: 'center',
   },
 });

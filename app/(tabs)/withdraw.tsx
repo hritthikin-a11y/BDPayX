@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TextInput, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TextInput,
+  Platform,
+} from 'react-native';
 import { useBanking } from '../../providers/BankingProvider';
 import { useAuth } from '../../providers/AuthProvider';
 import { formatCurrency, validateAmount } from '../../lib/constants';
@@ -18,7 +26,7 @@ export default function WithdrawScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
@@ -62,7 +70,10 @@ export default function WithdrawScreen() {
           ]
         );
       } else {
-        Alert.alert('Error', 'Failed to submit withdrawal request. Please try again.');
+        Alert.alert(
+          'Error',
+          'Failed to submit withdrawal request. Please try again.'
+        );
       }
     } catch (error) {
       console.error('Withdrawal error:', error);
@@ -76,7 +87,9 @@ export default function WithdrawScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Withdraw Funds</Text>
-        <Text style={styles.subtitle}>Transfer money from your BDPayX wallet</Text>
+        <Text style={styles.subtitle}>
+          Transfer money from your BDPayX wallet
+        </Text>
       </View>
 
       <View style={styles.form}>
@@ -103,7 +116,9 @@ export default function WithdrawScreen() {
             <View style={styles.placeholderContainer}>
               <Ionicons name="card-outline" size={48} color="#7B8794" />
               <Text style={styles.placeholderText}>No bank accounts added</Text>
-              <Text style={styles.placeholderSubtext}>Add a bank account to withdraw funds</Text>
+              <Text style={styles.placeholderSubtext}>
+                Add a bank account to withdraw funds
+              </Text>
               <CustomButton
                 title="Add Bank Account"
                 onPress={() => router.push('/(tabs)/add-bank-account')}
@@ -112,12 +127,16 @@ export default function WithdrawScreen() {
               />
             </View>
           ) : (
-            bankAccounts.map(account => (
+            bankAccounts.map((account) => (
               <View key={account.id} style={styles.bankOption}>
                 <CustomButton
                   title={`${account.bank_name} (${account.account_number})`}
                   onPress={() => handleInputChange('bankAccountId', account.id)}
-                  variant={formData.bankAccountId === account.id ? 'primary' : 'outline'}
+                  variant={
+                    formData.bankAccountId === account.id
+                      ? 'primary'
+                      : 'outline'
+                  }
                   style={styles.bankButton}
                   textStyle={styles.bankButtonText}
                 />
