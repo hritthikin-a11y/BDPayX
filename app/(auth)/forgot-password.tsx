@@ -60,11 +60,8 @@ export default function ForgotPasswordScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      <LinearGradient
-        colors={['#4A90E2', '#357ABD']}
-        style={styles.gradient}
-      >
-        <KeyboardAvoidingView 
+      <LinearGradient colors={['#4A90E2', '#357ABD']} style={styles.gradient}>
+        <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardView}
         >
@@ -77,11 +74,12 @@ export default function ForgotPasswordScreen() {
               <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
             </TouchableOpacity>
             <View style={styles.iconContainer}>
-              <Ionicons name="key-outline" size={48} color="#FFFFFF" />
+              <Ionicons name="key-outline" size={40} color="#FFFFFF" />
             </View>
             <Text style={styles.title}>Forgot Password?</Text>
             <Text style={styles.subtitle}>
-              Enter your email address and we'll send you a link to reset your password.
+              Enter your email address and we'll send you a link to reset your
+              password.
             </Text>
           </View>
 
@@ -90,7 +88,12 @@ export default function ForgotPasswordScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
               <View style={styles.inputContainer}>
-                <Ionicons name="mail-outline" size={20} color="#7B8794" style={styles.inputIcon} />
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color="#7B8794"
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={styles.input}
                   value={email}
@@ -117,7 +120,12 @@ export default function ForgotPasswordScreen() {
               style={styles.backToLogin}
               onPress={() => router.back()}
             >
-              <Ionicons name="arrow-back" size={16} color="#4A90E2" style={styles.backIcon} />
+              <Ionicons
+                name="arrow-back"
+                size={16}
+                color="#4A90E2"
+                style={styles.backIcon}
+              />
               <Text style={styles.backToLoginText}>Back to Login</Text>
             </TouchableOpacity>
           </View>
@@ -171,6 +179,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 16,
     textAlign: 'center',
+    flexShrink: 1,
   },
   subtitle: {
     fontSize: 16,

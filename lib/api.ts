@@ -20,12 +20,12 @@ export class ApiService {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1);
-    
+
     if (error) {
       console.error('Error fetching user profile:', error);
       return null;
     }
-    
+
     // Return first item or null if empty array
     return data && data.length > 0 ? data[0] : null;
   }
@@ -42,12 +42,12 @@ export class ApiService {
       .insert(userData)
       .select()
       .single();
-    
+
     if (error) {
       console.error('Error creating user profile:', error);
       return null;
     }
-    
+
     return data;
   }
 
@@ -59,12 +59,12 @@ export class ApiService {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1);
-    
+
     if (error) {
       console.error('Error fetching wallet:', error);
       return null;
     }
-    
+
     // Return first item or null if empty array
     return data && data.length > 0 ? data[0] : null;
   }
@@ -79,12 +79,12 @@ export class ApiService {
       })
       .select()
       .single();
-    
+
     if (error) {
       console.error('Error creating wallet:', error);
       return null;
     }
-    
+
     return data;
   }
 
@@ -96,12 +96,12 @@ export class ApiService {
       .eq('user_id', userId)
       .eq('is_active', true)
       .order('created_at', { ascending: false });
-    
+
     if (error) {
       console.error('Error fetching user bank accounts:', error);
       return [];
     }
-    
+
     return data || [];
   }
 
@@ -118,12 +118,12 @@ export class ApiService {
       .insert(accountData)
       .select()
       .single();
-    
+
     if (error) {
       console.error('Error creating bank account:', error);
       return null;
     }
-    
+
     return data;
   }
 
@@ -132,12 +132,12 @@ export class ApiService {
       .from('user_bank_accounts')
       .update({ is_active: false })
       .eq('id', accountId);
-    
+
     if (error) {
       console.error('Error deleting bank account:', error);
       return false;
     }
-    
+
     return true;
   }
 
@@ -148,12 +148,12 @@ export class ApiService {
       .select('*')
       .eq('is_active', true)
       .order('bank_type', { ascending: true });
-    
+
     if (error) {
       console.error('Error fetching admin bank accounts:', error);
       return [];
     }
-    
+
     return data || [];
   }
 
@@ -164,16 +164,19 @@ export class ApiService {
       .select('*')
       .eq('is_active', true)
       .order('from_currency', { ascending: true });
-    
+
     if (error) {
       console.error('Error fetching exchange rates:', error);
       return [];
     }
-    
+
     return data || [];
   }
 
-  static async getExchangeRate(fromCurrency: 'BDT' | 'INR', toCurrency: 'BDT' | 'INR'): Promise<ExchangeRate | null> {
+  static async getExchangeRate(
+    fromCurrency: 'BDT' | 'INR',
+    toCurrency: 'BDT' | 'INR'
+  ): Promise<ExchangeRate | null> {
     const { data, error } = await supabase
       .from('exchange_rates')
       .select('*')
@@ -181,12 +184,12 @@ export class ApiService {
       .eq('to_currency', toCurrency)
       .eq('is_active', true)
       .single();
-    
+
     if (error) {
       console.error('Error fetching exchange rate:', error);
       return null;
     }
-    
+
     return data;
   }
 
@@ -198,27 +201,29 @@ export class ApiService {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(50);
-    
+
     if (error) {
       console.error('Error fetching transactions:', error);
       return [];
     }
-    
+
     return data || [];
   }
 
-  static async getTransactionById(transactionId: string): Promise<Transaction | null> {
+  static async getTransactionById(
+    transactionId: string
+  ): Promise<Transaction | null> {
     const { data, error } = await supabase
       .from('transactions')
       .select('*')
       .eq('id', transactionId)
       .single();
-    
+
     if (error) {
       console.error('Error fetching transaction:', error);
       return null;
     }
-    
+
     return data;
   }
 
@@ -230,9 +235,43 @@ export class ApiService {
     senderName: string,
     transactionRef: string,
     adminBankAccountId: string,
-    imageUrl: string | null
+    imageUri: string | null
   ): Promise<DepositRequest | null> {
     try {
+      let imageUrl: string | null = null;
+
+      // Upload image if provided
+      if (imageUri) {
+        try {
+          const fileName = `${userId}/${Date.now()}.jpg`;
+
+          // Convert uri to blob for upload
+          const response = await fetch(imageUri);
+          const blob = await response.blob();
+
+          const { data: uploadData, error: uploadError } =
+            await supabase.storage
+              .from('deposit-screenshots')
+              .upload(fileName, blob, {
+                contentType: 'image/jpeg',
+                upsert: false,
+              });
+
+          if (uploadError) {
+            console.error('Error uploading image:', uploadError);
+            // Continue without image if upload fails
+          } else {
+            const { data: urlData } = supabase.storage
+              .from('deposit-screenshots')
+              .getPublicUrl(fileName);
+            imageUrl = urlData.publicUrl;
+          }
+        } catch (uploadError) {
+          console.error('Error processing image upload:', uploadError);
+          // Continue without image if upload fails
+        }
+      }
+
       // Create transaction first
       const { data: transactionData, error: transactionError } = await supabase
         .from('transactions')
@@ -245,12 +284,12 @@ export class ApiService {
         })
         .select()
         .single();
-      
+
       if (transactionError) {
         console.error('Error creating deposit transaction:', transactionError);
         return null;
       }
-      
+
       // Create deposit request
       const { data, error } = await supabase
         .from('deposit_requests')
@@ -267,12 +306,12 @@ export class ApiService {
         })
         .select()
         .single();
-      
+
       if (error) {
         console.error('Error creating deposit request:', error);
         return null;
       }
-      
+
       return data;
     } catch (error) {
       console.error('Unexpected error in createDepositRequest:', error);
@@ -300,12 +339,15 @@ export class ApiService {
         })
         .select()
         .single();
-      
+
       if (transactionError) {
-        console.error('Error creating withdrawal transaction:', transactionError);
+        console.error(
+          'Error creating withdrawal transaction:',
+          transactionError
+        );
         return null;
       }
-      
+
       // Create withdrawal request
       const { data, error } = await supabase
         .from('withdrawal_requests')
@@ -319,12 +361,12 @@ export class ApiService {
         })
         .select()
         .single();
-      
+
       if (error) {
         console.error('Error creating withdrawal request:', error);
         return null;
       }
-      
+
       return data;
     } catch (error) {
       console.error('Unexpected error in createWithdrawalRequest:', error);
@@ -358,12 +400,12 @@ export class ApiService {
         })
         .select()
         .single();
-      
+
       if (transactionError) {
         console.error('Error creating exchange transaction:', transactionError);
         return null;
       }
-      
+
       // Create exchange request
       const { data, error } = await supabase
         .from('exchange_requests')
@@ -379,12 +421,12 @@ export class ApiService {
         })
         .select()
         .single();
-      
+
       if (error) {
         console.error('Error creating exchange request:', error);
         return null;
       }
-      
+
       return data;
     } catch (error) {
       console.error('Unexpected error in createExchangeRequest:', error);

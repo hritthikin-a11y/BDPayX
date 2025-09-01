@@ -114,8 +114,8 @@ export default function WithdrawScreen() {
           <Text style={styles.label}>Withdraw To</Text>
           {bankAccounts.length === 0 ? (
             <View style={styles.placeholderContainer}>
-              <Ionicons name="card-outline" size={48} color="#7B8794" />
-              <Text style={styles.placeholderText}>No bank accounts added</Text>
+              <Ionicons name="card-outline" size={40} color="#7B8794" />
+              <Text style={styles.placeholderText}>No Bank Accounts</Text>
               <Text style={styles.placeholderSubtext}>
                 Add a bank account to withdraw funds
               </Text>
@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#1E293B',
     marginBottom: 4,
+    flexShrink: 1,
   },
   subtitle: {
     fontSize: 14,

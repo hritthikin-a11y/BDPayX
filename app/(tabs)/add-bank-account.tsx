@@ -159,7 +159,7 @@ export default function AddBankAccountScreen() {
               style={[
                 styles.bankTypeButton,
                 formData.bankType === 'BKASH' && styles.activeBankTypeButton,
-              ]}
+              ].filter(Boolean) as any}
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
@@ -169,7 +169,7 @@ export default function AddBankAccountScreen() {
               style={[
                 styles.bankTypeButton,
                 formData.bankType === 'NAGAD' && styles.activeBankTypeButton,
-              ]}
+              ].filter(Boolean) as any}
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
@@ -179,7 +179,7 @@ export default function AddBankAccountScreen() {
               style={[
                 styles.bankTypeButton,
                 formData.bankType === 'ROCKET' && styles.activeBankTypeButton,
-              ]}
+              ].filter(Boolean) as any}
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
@@ -189,7 +189,7 @@ export default function AddBankAccountScreen() {
               style={[
                 styles.bankTypeButton,
                 formData.bankType === 'BANK' && styles.activeBankTypeButton,
-              ]}
+              ].filter(Boolean) as any}
               textStyle={styles.bankTypeButtonText}
             />
           </View>

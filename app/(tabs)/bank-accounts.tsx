@@ -15,7 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function BankAccountsScreen() {
   const router = useRouter();
-  const { bankAccounts, loading, fetchBankAccounts, deleteUserBankAccount } = useBanking();
+  const { bankAccounts, loading, fetchBankAccounts, deleteUserBankAccount } =
+    useBanking();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -54,7 +55,7 @@ export default function BankAccountsScreen() {
           <Text style={styles.accountType}>{item.bank_type}</Text>
         </View>
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => handleDeleteAccount(item.id)}
           >
@@ -62,13 +63,18 @@ export default function BankAccountsScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      
+
       <Text style={styles.accountName}>{item.account_name}</Text>
       <Text style={styles.accountNumber}>{item.account_number}</Text>
-      
+
       <View style={styles.accountFooter}>
         <Text style={styles.currencyText}>{item.currency}</Text>
-        <Text style={[styles.statusText, item.is_active ? styles.activeStatus : styles.inactiveStatus]}>
+        <Text
+          style={[
+            styles.statusText,
+            item.is_active ? styles.activeStatus : styles.inactiveStatus,
+          ]}
+        >
           {item.is_active ? 'Active' : 'Inactive'}
         </Text>
       </View>
@@ -83,10 +89,10 @@ export default function BankAccountsScreen() {
           style={styles.addButton}
           onPress={() => router.push('/(tabs)/add-bank-account')}
         >
-          <Ionicons name="add-circle-outline" size={28} color="#4A90E2" />
+          <Ionicons name="add-circle-outline" size={24} color="#4A90E2" />
         </TouchableOpacity>
       </View>
-      
+
       <FlatList
         data={bankAccounts}
         renderItem={renderBankAccount}
@@ -97,7 +103,7 @@ export default function BankAccountsScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="card-outline" size={64} color="#ccc" />
+            <Ionicons name="card-outline" size={48} color="#ccc" />
             <Text style={styles.emptyText}>
               {loading ? 'Loading bank accounts...' : 'No bank accounts yet'}
             </Text>
@@ -132,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
+    flexShrink: 1,
   },
   addButton: {
     padding: 8,

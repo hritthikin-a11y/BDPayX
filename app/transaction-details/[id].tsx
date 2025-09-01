@@ -203,6 +203,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginLeft: 16,
+    flexShrink: 1,
   },
   statusCard: {
     backgroundColor: '#fff',

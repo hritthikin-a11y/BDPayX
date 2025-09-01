@@ -227,6 +227,7 @@ export type Database = {
           id: string
           processed_at: string | null
           reference_number: string | null
+          screenshot_url: string | null
           status: Database["public"]["Enums"]["transaction_status"] | null
           to_currency: Database["public"]["Enums"]["currency_type"] | null
           type: string
@@ -246,6 +247,7 @@ export type Database = {
           id?: string
           processed_at?: string | null
           reference_number?: string | null
+          screenshot_url?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           to_currency?: Database["public"]["Enums"]["currency_type"] | null
           type: string
@@ -265,6 +267,7 @@ export type Database = {
           id?: string
           processed_at?: string | null
           reference_number?: string | null
+          screenshot_url?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           to_currency?: Database["public"]["Enums"]["currency_type"] | null
           type?: string

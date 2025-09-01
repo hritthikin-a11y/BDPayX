@@ -6,28 +6,30 @@ export default function IconVerificationScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Icon Verification</Text>
-      <Text style={styles.subtitle}>If you can see the icons below, they're working correctly</Text>
-      
+      <Text style={styles.subtitle}>
+        If you can see the icons below, they're working correctly
+      </Text>
+
       <View style={styles.iconRow}>
-        <Ionicons name="home" size={32} color="#4A90E2" />
+        <Ionicons name="home" size={24} color="#4A90E2" />
         <Text style={styles.label}>Home</Text>
       </View>
-      
+
       <View style={styles.iconRow}>
-        <Ionicons name="wallet" size={32} color="#4A90E2" />
+        <Ionicons name="wallet" size={24} color="#4A90E2" />
         <Text style={styles.label}>Wallet</Text>
       </View>
-      
+
       <View style={styles.iconRow}>
-        <Ionicons name="list" size={32} color="#4A90E2" />
+        <Ionicons name="list" size={24} color="#4A90E2" />
         <Text style={styles.label}>List</Text>
       </View>
-      
+
       <View style={styles.iconRow}>
-        <Ionicons name="person" size={32} color="#4A90E2" />
+        <Ionicons name="person" size={24} color="#4A90E2" />
         <Text style={styles.label}>Person</Text>
       </View>
-      
+
       <View style={styles.successMessage}>
         <Ionicons name="checkmark-circle" size={24} color="#10B981" />
         <Text style={styles.successText}>Icons are working correctly!</Text>
@@ -49,6 +51,7 @@ const styles = StyleSheet.create({
     color: '#2E3A59',
     textAlign: 'center',
     marginBottom: 8,
+    flexShrink: 1,
   },
   subtitle: {
     fontSize: 16,

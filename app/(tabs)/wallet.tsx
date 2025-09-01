@@ -348,10 +348,10 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   emptyIcon: {
-    width: 64,
-    height: 64,
+    width: 48,
+    height: 48,
     backgroundColor: '#F8FAFC',
-    borderRadius: 32,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,

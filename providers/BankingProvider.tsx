@@ -2,12 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ApiService } from '../lib/api';
 import { useAuth } from './AuthProvider';
 import { supabase } from '../lib/supabase';
-import type { 
-  Wallet, 
-  UserBankAccount, 
-  AdminBankAccount, 
-  Transaction, 
-  ExchangeRate 
+import type {
+  Wallet,
+  UserBankAccount,
+  AdminBankAccount,
+  Transaction,
+  ExchangeRate,
 } from '../lib/supabase';
 
 interface BankingContextType {
@@ -38,7 +38,7 @@ interface BankingContextType {
     senderName: string,
     transactionRef: string,
     adminBankAccountId: string,
-    imageUrl: string | null
+    imageUri: string | null
   ) => Promise<boolean>;
   withdrawRequest: (
     userId: string,
@@ -59,10 +59,14 @@ interface BankingContextType {
 const BankingContext = createContext<BankingContextType | undefined>(undefined);
 
 export function BankingProvider({ children }: { children: React.ReactNode }) {
-  const [balance, setBalance] = useState<{ bdt: number; inr: number } | null>(null);
+  const [balance, setBalance] = useState<{ bdt: number; inr: number } | null>(
+    null
+  );
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [bankAccounts, setBankAccounts] = useState<UserBankAccount[]>([]);
-  const [adminBankAccounts, setAdminBankAccounts] = useState<AdminBankAccount[]>([]);
+  const [adminBankAccounts, setAdminBankAccounts] = useState<
+    AdminBankAccount[]
+  >([]);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRate[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -103,19 +107,19 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
     try {
       // Try to get user profile first
       let userProfile = await ApiService.getUserProfile(user.id);
-      
+
       // If user profile doesn't exist, create it
       if (!userProfile) {
-        userProfile = await ApiService.createUserProfile({ 
+        userProfile = await ApiService.createUserProfile({
           user_id: user.id,
           full_name: user.user_metadata?.full_name || '',
-          phone: user.user_metadata?.phone || ''
+          phone: user.user_metadata?.phone || '',
         });
       }
 
       // Get or create wallet
       let wallet = await ApiService.getUserWallet(user.id);
-      
+
       if (!wallet) {
         wallet = await ApiService.createUserWallet(user.id);
       }
@@ -133,7 +137,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
 
   const fetchTransactions = async () => {
     if (!user) return;
-    
+
     try {
       const data = await ApiService.getUserTransactions(user.id);
       setTransactions(data);
@@ -144,7 +148,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
 
   const fetchBankAccounts = async () => {
     if (!user) return;
-    
+
     try {
       const data = await ApiService.getUserBankAccounts(user.id);
       setBankAccounts(data);
@@ -179,7 +183,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
     currency?: 'BDT' | 'INR';
   }): Promise<boolean> => {
     if (!user) return false;
-    
+
     try {
       const result = await ApiService.createUserBankAccount({
         ...account,
@@ -204,7 +208,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
     senderName: string,
     transactionRef: string,
     adminBankAccountId: string,
-    imageUrl: string | null
+    imageUri: string | null
   ): Promise<boolean> => {
     try {
       const result = await ApiService.createDepositRequest(
@@ -214,7 +218,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
         senderName,
         transactionRef,
         adminBankAccountId,
-        imageUrl
+        imageUri
       );
 
       if (result) {
@@ -317,9 +321,7 @@ export function BankingProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <BankingContext.Provider value={value}>
-      {children}
-    </BankingContext.Provider>
+    <BankingContext.Provider value={value}>{children}</BankingContext.Provider>
   );
 }
 

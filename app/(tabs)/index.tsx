@@ -163,21 +163,6 @@ export default function HomeScreen() {
               1 INR = {getExchangeRate('INR', 'BDT').toFixed(2)} BDT
             </Text>
           </View>
-
-          <View style={styles.rateCard}>
-            <View style={styles.rateHeader}>
-              <Text style={styles.ratePair}>USD → BDT</Text>
-              <View style={styles.trendIndicator}>
-                <Ionicons name="trending-down" size={12} color="#EF4444" />
-              </View>
-            </View>
-            <Text style={styles.rateValue}>
-              {getExchangeRate('USD', 'BDT').toFixed(0)}
-            </Text>
-            <Text style={styles.rateSubtext}>
-              1 USD = {getExchangeRate('USD', 'BDT').toFixed(0)} BDT
-            </Text>
-          </View>
         </ScrollView>
       </View>
 
@@ -192,7 +177,9 @@ export default function HomeScreen() {
             <View style={[styles.actionIcon, { backgroundColor: '#10B981' }]}>
               <AntDesign name="plus" size={24} color="#FFFFFF" />
             </View>
-            <Text style={styles.actionTitle}>Deposit</Text>
+            <Text style={styles.actionTitle} numberOfLines={1}>
+              Deposit
+            </Text>
             <Text style={styles.actionSubtitle}>Add money</Text>
           </TouchableOpacity>
 
@@ -203,7 +190,9 @@ export default function HomeScreen() {
             <View style={[styles.actionIcon, { backgroundColor: '#EF4444' }]}>
               <AntDesign name="minus" size={24} color="#FFFFFF" />
             </View>
-            <Text style={styles.actionTitle}>Withdraw</Text>
+            <Text style={styles.actionTitle} numberOfLines={1}>
+              Withdraw
+            </Text>
             <Text style={styles.actionSubtitle}>Cash out</Text>
           </TouchableOpacity>
 
@@ -214,7 +203,9 @@ export default function HomeScreen() {
             <View style={[styles.actionIcon, { backgroundColor: '#F59E0B' }]}>
               <AntDesign name="swap" size={24} color="#FFFFFF" />
             </View>
-            <Text style={styles.actionTitle}>Exchange</Text>
+            <Text style={styles.actionTitle} numberOfLines={1}>
+              Exchange
+            </Text>
             <Text style={styles.actionSubtitle}>Convert</Text>
           </TouchableOpacity>
 
@@ -225,7 +216,9 @@ export default function HomeScreen() {
             <View style={[styles.actionIcon, { backgroundColor: '#8B5CF6' }]}>
               <AntDesign name="arrowright" size={24} color="#FFFFFF" />
             </View>
-            <Text style={styles.actionTitle}>Transfer</Text>
+            <Text style={styles.actionTitle} numberOfLines={1}>
+              Transfer
+            </Text>
             <Text style={styles.actionSubtitle}>Send money</Text>
           </TouchableOpacity>
         </View>
@@ -241,7 +234,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.emptyState}>
           <View style={styles.emptyIcon}>
-            <Ionicons name="receipt-outline" size={32} color="#94A3B8" />
+            <Ionicons name="receipt-outline" size={24} color="#94A3B8" />
           </View>
           <Text style={styles.emptyTitle}>No transactions yet</Text>
           <Text style={styles.emptySubtitle}>
@@ -283,6 +276,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: '#FFFFFF',
+    flexShrink: 1,
   },
   profileAvatar: {
     width: 40,
@@ -350,6 +344,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#1E293B',
+    flexShrink: 1,
   },
   seeAllText: {
     fontSize: 14,
@@ -432,10 +427,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   actionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#1E293B',
     marginBottom: 1,
+    textAlign: 'center',
   },
   actionSubtitle: {
     fontSize: 9,
@@ -447,10 +443,10 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   },
   emptyIcon: {
-    width: 64,
-    height: 64,
+    width: 48,
+    height: 48,
     backgroundColor: '#F8FAFC',
-    borderRadius: 32,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
