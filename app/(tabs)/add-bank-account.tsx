@@ -11,7 +11,7 @@ import {
 import { useBanking } from '../../providers/BankingProvider';
 import CustomButton from '../../components/CustomButton';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function AddBankAccountScreen() {
   const { addBankAccount, fetchBankAccounts } = useBanking();

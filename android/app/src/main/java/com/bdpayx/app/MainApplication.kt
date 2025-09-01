@@ -1,4 +1,4 @@
-package com.bdpayx
+package com.bdpayx.app
 
 import android.app.Application
 import android.content.res.Configuration
