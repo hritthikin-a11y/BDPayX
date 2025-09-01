@@ -52,7 +52,9 @@ export default function BankAccountsScreen() {
       <View style={styles.accountHeader}>
         <View style={styles.accountTypeContainer}>
           <Ionicons name="card-outline" size={24} color="#4A90E2" />
-          <Text style={styles.accountType}>{item.bank_type}</Text>
+          <Text style={styles.accountType}>
+            {item.bank_type} ({item.currency})
+          </Text>
         </View>
         <View style={styles.actionsContainer}>
           <TouchableOpacity

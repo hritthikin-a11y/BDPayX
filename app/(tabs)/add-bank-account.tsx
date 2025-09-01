@@ -21,6 +21,7 @@ export default function AddBankAccountScreen() {
     accountNumber: '',
     bankName: '',
     bankType: 'BANK' as 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK',
+    currency: 'BDT' as 'BDT' | 'INR',
   });
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +52,7 @@ export default function AddBankAccountScreen() {
         account_number: formData.accountNumber,
         bank_name: formData.bankName,
         bank_type: formData.bankType,
-        currency: 'BDT',
+        currency: formData.currency,
       });
 
       if (success) {
@@ -155,42 +156,81 @@ export default function AddBankAccountScreen() {
             <CustomButton
               title="bKash"
               onPress={() => handleInputChange('bankType', 'BKASH')}
-              variant={formData.bankType === 'BKASH' ? 'primary' : 'outline'}
-              style={[
-                styles.bankTypeButton,
-                formData.bankType === 'BKASH' && styles.activeBankTypeButton,
-              ].filter(Boolean) as any}
+              variant={'outline'}
+              style={
+                [
+                  styles.bankTypeButton,
+                  formData.bankType === 'BKASH' && styles.activeBankTypeButton,
+                ].filter(Boolean) as any
+              }
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
               title="Nagad"
               onPress={() => handleInputChange('bankType', 'NAGAD')}
-              variant={formData.bankType === 'NAGAD' ? 'primary' : 'outline'}
-              style={[
-                styles.bankTypeButton,
-                formData.bankType === 'NAGAD' && styles.activeBankTypeButton,
-              ].filter(Boolean) as any}
+              variant={'outline'}
+              style={
+                [
+                  styles.bankTypeButton,
+                  formData.bankType === 'NAGAD' && styles.activeBankTypeButton,
+                ].filter(Boolean) as any
+              }
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
               title="Rocket"
               onPress={() => handleInputChange('bankType', 'ROCKET')}
-              variant={formData.bankType === 'ROCKET' ? 'primary' : 'outline'}
-              style={[
-                styles.bankTypeButton,
-                formData.bankType === 'ROCKET' && styles.activeBankTypeButton,
-              ].filter(Boolean) as any}
+              variant={'outline'}
+              style={
+                [
+                  styles.bankTypeButton,
+                  formData.bankType === 'ROCKET' && styles.activeBankTypeButton,
+                ].filter(Boolean) as any
+              }
               textStyle={styles.bankTypeButtonText}
             />
             <CustomButton
               title="Bank"
               onPress={() => handleInputChange('bankType', 'BANK')}
-              variant={formData.bankType === 'BANK' ? 'primary' : 'outline'}
-              style={[
-                styles.bankTypeButton,
-                formData.bankType === 'BANK' && styles.activeBankTypeButton,
-              ].filter(Boolean) as any}
+              variant={'outline'}
+              style={
+                [
+                  styles.bankTypeButton,
+                  formData.bankType === 'BANK' && styles.activeBankTypeButton,
+                ].filter(Boolean) as any
+              }
               textStyle={styles.bankTypeButtonText}
+            />
+          </View>
+        </View>
+
+        {/* Currency */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Currency</Text>
+          <View style={styles.currencySelector}>
+            <CustomButton
+              title="BDT (৳)"
+              onPress={() => handleInputChange('currency', 'BDT')}
+              variant={'outline'}
+              style={
+                [
+                  styles.currencyButton,
+                  formData.currency === 'BDT' && styles.activeCurrencyButton,
+                ].filter(Boolean) as any
+              }
+              textStyle={styles.currencyButtonText}
+            />
+            <CustomButton
+              title="INR (₹)"
+              onPress={() => handleInputChange('currency', 'INR')}
+              variant={'outline'}
+              style={
+                [
+                  styles.currencyButton,
+                  formData.currency === 'INR' && styles.activeCurrencyButton,
+                ].filter(Boolean) as any
+              }
+              textStyle={styles.currencyButtonText}
             />
           </View>
         </View>
@@ -288,6 +328,25 @@ const styles = StyleSheet.create({
   },
   bankTypeButtonText: {
     fontSize: 13,
+    fontWeight: '600',
+  },
+  currencySelector: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  currencyButton: {
+    flex: 1,
+    borderRadius: 12,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  activeCurrencyButton: {
+    backgroundColor: '#3B82F6',
+    borderColor: '#3B82F6',
+  },
+  currencyButtonText: {
+    fontSize: 15,
     fontWeight: '600',
   },
   submitButton: {

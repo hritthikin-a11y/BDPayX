@@ -16,18 +16,37 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function WithdrawScreen() {
-  const { bankAccounts, withdrawRequest, fetchBalance } = useBanking();
+  const { bankAccounts, withdrawRequest, fetchBalance, balance } = useBanking();
   const { user } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     amount: '',
     bankAccountId: '',
+    currency: 'BDT' as 'BDT' | 'INR',
   });
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      // If currency is changed, reset bank account selection
+      if (field === 'currency') {
+        return { ...prev, currency: value as 'BDT' | 'INR', bankAccountId: '' };
+      }
+      return { ...prev, [field]: value };
+    });
   };
+
+  // Filter bank accounts by selected currency
+  const filteredBankAccounts = bankAccounts.filter(
+    (account) => account.currency === formData.currency
+  );
+
+  // Get available balance for selected currency
+  const availableBalance = balance
+    ? formData.currency === 'BDT'
+      ? balance.bdt
+      : balance.inr
+    : 0;
 
   const handleSubmit = async () => {
     // Validation
@@ -42,9 +61,23 @@ export default function WithdrawScreen() {
       return;
     }
 
-    const amountError = validateAmount(amount, 'WITHDRAWAL', 'BDT');
+    const amountError = validateAmount(amount, 'WITHDRAWAL', formData.currency);
     if (amountError) {
       Alert.alert('Error', amountError);
+      return;
+    }
+
+    // Check if user has sufficient balance
+    if (amount > availableBalance) {
+      Alert.alert(
+        'Insufficient Balance',
+        `You don't have enough ${
+          formData.currency
+        } balance. Available: ${formatCurrency(
+          availableBalance,
+          formData.currency
+        )}`
+      );
       return;
     }
 
@@ -53,7 +86,7 @@ export default function WithdrawScreen() {
       const success = await withdrawRequest(
         user!.id,
         amount,
-        'BDT',
+        formData.currency,
         formData.bankAccountId
       );
 
@@ -90,14 +123,53 @@ export default function WithdrawScreen() {
         <Text style={styles.subtitle}>
           Transfer money from your BDPayX wallet
         </Text>
+        <View style={styles.balanceContainer}>
+          <Text style={styles.balanceLabel}>Available Balance:</Text>
+          <Text style={styles.balanceAmount}>
+            {formatCurrency(availableBalance, formData.currency)}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.form}>
+        {/* Currency Selection */}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Currency</Text>
+          <View style={styles.currencySelector}>
+            <CustomButton
+              title="BDT (৳)"
+              onPress={() => handleInputChange('currency', 'BDT')}
+              variant={'outline'}
+              style={
+                [
+                  styles.currencyButton,
+                  formData.currency === 'BDT' && styles.activeCurrencyButton,
+                ].filter(Boolean) as any
+              }
+              textStyle={styles.currencyButtonText}
+            />
+            <CustomButton
+              title="INR (₹)"
+              onPress={() => handleInputChange('currency', 'INR')}
+              variant={'outline'}
+              style={
+                [
+                  styles.currencyButton,
+                  formData.currency === 'INR' && styles.activeCurrencyButton,
+                ].filter(Boolean) as any
+              }
+              textStyle={styles.currencyButtonText}
+            />
+          </View>
+        </View>
+
         {/* Amount Input */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Amount (BDT)</Text>
+          <Text style={styles.label}>Amount ({formData.currency})</Text>
           <View style={styles.inputContainer}>
-            <Text style={styles.currencySymbol}>৳</Text>
+            <Text style={styles.currencySymbol}>
+              {formData.currency === 'BDT' ? '৳' : '₹'}
+            </Text>
             <TextInput
               style={styles.input}
               value={formData.amount}
@@ -112,12 +184,14 @@ export default function WithdrawScreen() {
         {/* Bank Account */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Withdraw To</Text>
-          {bankAccounts.length === 0 ? (
+          {filteredBankAccounts.length === 0 ? (
             <View style={styles.placeholderContainer}>
               <Ionicons name="card-outline" size={40} color="#7B8794" />
-              <Text style={styles.placeholderText}>No Bank Accounts</Text>
+              <Text style={styles.placeholderText}>
+                No {formData.currency} Bank Accounts
+              </Text>
               <Text style={styles.placeholderSubtext}>
-                Add a bank account to withdraw funds
+                Add a {formData.currency} bank account to withdraw funds
               </Text>
               <CustomButton
                 title="Add Bank Account"
@@ -127,7 +201,7 @@ export default function WithdrawScreen() {
               />
             </View>
           ) : (
-            bankAccounts.map((account) => (
+            filteredBankAccounts.map((account) => (
               <View key={account.id} style={styles.bankOption}>
                 <CustomButton
                   title={`${account.bank_name} (${account.account_number})`}
@@ -150,7 +224,7 @@ export default function WithdrawScreen() {
           title="Submit Withdrawal Request"
           onPress={handleSubmit}
           loading={loading}
-          disabled={bankAccounts.length === 0}
+          disabled={filteredBankAccounts.length === 0}
           style={styles.submitButton}
           textStyle={styles.submitButtonText}
         />
@@ -170,6 +244,25 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+  },
+  balanceContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  balanceLabel: {
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  balanceAmount: {
+    fontSize: 18,
+    color: '#1E293B',
+    fontWeight: '700',
   },
   title: {
     fontSize: 28,
@@ -222,6 +315,25 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#1E293B',
+  },
+  currencySelector: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  currencyButton: {
+    flex: 1,
+    borderRadius: 12,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  activeCurrencyButton: {
+    backgroundColor: '#3B82F6',
+    borderColor: '#3B82F6',
+  },
+  currencyButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
   placeholderContainer: {
     alignItems: 'center',
