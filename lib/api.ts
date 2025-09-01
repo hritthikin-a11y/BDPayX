@@ -108,10 +108,15 @@ export class ApiService {
   static async createUserBankAccount(accountData: {
     user_id: string;
     account_name: string;
-    account_number: string;
-    bank_name: string;
-    bank_type?: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK';
+    account_number?: string;
+    bank_name?: string;
+    bank_type?: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK' | 'UPI';
     currency?: 'BDT' | 'INR';
+    branch_name?: string;
+    routing_number?: string;
+    ifsc_code?: string;
+    upi_id?: string;
+    mobile_number?: string;
   }): Promise<UserBankAccount | null> {
     const { data, error } = await supabase
       .from('user_bank_accounts')

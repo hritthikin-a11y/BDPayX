@@ -126,7 +126,9 @@ export default function WithdrawScreen() {
         <View style={styles.balanceContainer}>
           <Text style={styles.balanceLabel}>Available Balance:</Text>
           <Text style={styles.balanceAmount}>
-            {formatCurrency(availableBalance, formData.currency)}
+            {balance
+              ? formatCurrency(availableBalance, formData.currency)
+              : 'Loading...'}
           </Text>
         </View>
       </View>
@@ -201,21 +203,31 @@ export default function WithdrawScreen() {
               />
             </View>
           ) : (
-            filteredBankAccounts.map((account) => (
-              <View key={account.id} style={styles.bankOption}>
-                <CustomButton
-                  title={`${account.bank_name} (${account.account_number})`}
-                  onPress={() => handleInputChange('bankAccountId', account.id)}
-                  variant={
-                    formData.bankAccountId === account.id
-                      ? 'primary'
-                      : 'outline'
-                  }
-                  style={styles.bankButton}
-                  textStyle={styles.bankButtonText}
-                />
-              </View>
-            ))
+            filteredBankAccounts.map((account) => {
+              const displayName =
+                account.bank_name || account.bank_type || 'Unknown Bank';
+              const displayIdentifier = account.account_number
+                ? `•••• ${account.account_number.slice(-4)}`
+                : account.upi_id || account.mobile_number || 'N/A';
+
+              return (
+                <View key={account.id} style={styles.bankOption}>
+                  <CustomButton
+                    title={`${displayName} (${displayIdentifier})`}
+                    onPress={() =>
+                      handleInputChange('bankAccountId', account.id)
+                    }
+                    variant={
+                      formData.bankAccountId === account.id
+                        ? 'primary'
+                        : 'outline'
+                    }
+                    style={styles.bankButton}
+                    textStyle={styles.bankButtonText}
+                  />
+                </View>
+              );
+            })
           )}
         </View>
 

@@ -67,7 +67,9 @@ export default function BankAccountsScreen() {
       </View>
 
       <Text style={styles.accountName}>{item.account_name}</Text>
-      <Text style={styles.accountNumber}>{item.account_number}</Text>
+      <Text style={styles.accountNumber}>
+        {item.account_number || item.upi_id || item.mobile_number || 'N/A'}
+      </Text>
 
       <View style={styles.accountFooter}>
         <Text style={styles.currencyText}>{item.currency}</Text>

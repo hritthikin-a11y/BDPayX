@@ -25,10 +25,15 @@ interface BankingContextType {
   fetchExchangeRates: () => Promise<void>;
   addBankAccount: (account: {
     account_name: string;
-    account_number: string;
-    bank_name: string;
-    bank_type?: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK';
+    account_number?: string;
+    bank_name?: string;
+    bank_type?: 'BKASH' | 'NAGAD' | 'ROCKET' | 'BANK' | 'UPI';
     currency?: 'BDT' | 'INR';
+    branch_name?: string;
+    routing_number?: string;
+    ifsc_code?: string;
+    upi_id?: string;
+    mobile_number?: string;
   }) => Promise<boolean>;
   deleteUserBankAccount: (accountId: string) => Promise<boolean>;
   depositRequest: (

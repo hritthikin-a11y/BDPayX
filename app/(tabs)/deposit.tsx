@@ -198,23 +198,31 @@ export default function DepositScreen() {
           <Text style={styles.label}>Deposit To</Text>
           {adminBankAccounts
             .filter((acc) => acc.currency === 'BDT')
-            .map((account) => (
-              <View key={account.id} style={styles.bankOption}>
-                <CustomButton
-                  title={`${account.bank_name} (${account.account_number})`}
-                  onPress={() =>
-                    handleInputChange('adminBankAccountId', account.id)
-                  }
-                  variant={
-                    formData.adminBankAccountId === account.id
-                      ? 'primary'
-                      : 'outline'
-                  }
-                  style={styles.bankButton}
-                  textStyle={styles.bankButtonText}
-                />
-              </View>
-            ))}
+            .map((account) => {
+              const displayName =
+                account.bank_name || account.bank_type || 'Unknown Bank';
+              const displayIdentifier = account.account_number
+                ? `•••• ${account.account_number.slice(-4)}`
+                : account.upi_id || account.mobile_number || 'N/A';
+
+              return (
+                <View key={account.id} style={styles.bankOption}>
+                  <CustomButton
+                    title={`${displayName} (${displayIdentifier})`}
+                    onPress={() =>
+                      handleInputChange('adminBankAccountId', account.id)
+                    }
+                    variant={
+                      formData.adminBankAccountId === account.id
+                        ? 'primary'
+                        : 'outline'
+                    }
+                    style={styles.bankButton}
+                    textStyle={styles.bankButtonText}
+                  />
+                </View>
+              );
+            })}
         </View>
 
         {/* Screenshot Upload */}

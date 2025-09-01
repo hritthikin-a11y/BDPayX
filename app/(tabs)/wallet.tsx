@@ -166,6 +166,8 @@ export default function WalletScreen() {
                       name={
                         account.bank_type === 'BANK'
                           ? 'business'
+                          : account.bank_type === 'UPI'
+                          ? 'at'
                           : 'phone-portrait'
                       }
                       size={20}
@@ -177,10 +179,13 @@ export default function WalletScreen() {
                       {account.account_name}
                     </Text>
                     <Text style={styles.accountNumber}>
-                      •••• {account.account_number.slice(-4)}
+                      {account.account_number
+                        ? `•••• ${account.account_number.slice(-4)}`
+                        : account.upi_id || account.mobile_number || 'N/A'}
                     </Text>
                     <Text style={styles.bankName}>
-                      {account.bank_name} • {account.bank_type}
+                      {account.bank_name || account.bank_type} •{' '}
+                      {account.bank_type} • {account.currency}
                     </Text>
                   </View>
                 </View>

@@ -37,36 +37,66 @@ export type Database = {
       admin_bank_accounts: {
         Row: {
           account_name: string
-          account_number: string
-          bank_name: string
+          account_number: string | null
+          bank_address: string | null
+          bank_name: string | null
           bank_type: Database["public"]["Enums"]["bank_type"]
+          branch_name: string | null
           created_at: string | null
           currency: Database["public"]["Enums"]["currency_type"]
+          daily_limit: number | null
           id: string
+          ifsc_code: string | null
           is_active: boolean | null
+          mobile_number: string | null
+          monthly_limit: number | null
+          routing_number: string | null
+          swift_code: string | null
           updated_at: string | null
+          upi_id: string | null
+          zipcode: string | null
         }
         Insert: {
           account_name: string
-          account_number: string
-          bank_name: string
+          account_number?: string | null
+          bank_address?: string | null
+          bank_name?: string | null
           bank_type: Database["public"]["Enums"]["bank_type"]
+          branch_name?: string | null
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
+          daily_limit?: number | null
           id?: string
+          ifsc_code?: string | null
           is_active?: boolean | null
+          mobile_number?: string | null
+          monthly_limit?: number | null
+          routing_number?: string | null
+          swift_code?: string | null
           updated_at?: string | null
+          upi_id?: string | null
+          zipcode?: string | null
         }
         Update: {
           account_name?: string
-          account_number?: string
-          bank_name?: string
+          account_number?: string | null
+          bank_address?: string | null
+          bank_name?: string | null
           bank_type?: Database["public"]["Enums"]["bank_type"]
+          branch_name?: string | null
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
+          daily_limit?: number | null
           id?: string
+          ifsc_code?: string | null
           is_active?: boolean | null
+          mobile_number?: string | null
+          monthly_limit?: number | null
+          routing_number?: string | null
+          swift_code?: string | null
           updated_at?: string | null
+          upi_id?: string | null
+          zipcode?: string | null
         }
         Relationships: []
       }
@@ -141,6 +171,7 @@ export type Database = {
           is_active: boolean | null
           rate: number
           to_currency: Database["public"]["Enums"]["currency_type"]
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
@@ -149,6 +180,7 @@ export type Database = {
           is_active?: boolean | null
           rate: number
           to_currency: Database["public"]["Enums"]["currency_type"]
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
@@ -157,6 +189,7 @@ export type Database = {
           is_active?: boolean | null
           rate?: number
           to_currency?: Database["public"]["Enums"]["currency_type"]
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -227,7 +260,6 @@ export type Database = {
           id: string
           processed_at: string | null
           reference_number: string | null
-          screenshot_url: string | null
           status: Database["public"]["Enums"]["transaction_status"] | null
           to_currency: Database["public"]["Enums"]["currency_type"] | null
           type: string
@@ -247,7 +279,6 @@ export type Database = {
           id?: string
           processed_at?: string | null
           reference_number?: string | null
-          screenshot_url?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           to_currency?: Database["public"]["Enums"]["currency_type"] | null
           type: string
@@ -267,7 +298,6 @@ export type Database = {
           id?: string
           processed_at?: string | null
           reference_number?: string | null
-          screenshot_url?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           to_currency?: Database["public"]["Enums"]["currency_type"] | null
           type?: string
@@ -294,42 +324,66 @@ export type Database = {
       user_bank_accounts: {
         Row: {
           account_name: string
-          account_number: string
-          bank_name: string
+          account_number: string | null
+          bank_address: string | null
+          bank_name: string | null
           bank_type: Database["public"]["Enums"]["bank_type"]
+          branch_name: string | null
           created_at: string | null
           currency: Database["public"]["Enums"]["currency_type"]
           id: string
+          ifsc_code: string | null
           is_active: boolean | null
           is_verified: boolean | null
+          mobile_number: string | null
+          routing_number: string | null
+          swift_code: string | null
           updated_at: string | null
+          upi_id: string | null
           user_id: string
+          zipcode: string | null
         }
         Insert: {
           account_name: string
-          account_number: string
-          bank_name: string
+          account_number?: string | null
+          bank_address?: string | null
+          bank_name?: string | null
           bank_type?: Database["public"]["Enums"]["bank_type"]
+          branch_name?: string | null
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          ifsc_code?: string | null
           is_active?: boolean | null
           is_verified?: boolean | null
+          mobile_number?: string | null
+          routing_number?: string | null
+          swift_code?: string | null
           updated_at?: string | null
+          upi_id?: string | null
           user_id: string
+          zipcode?: string | null
         }
         Update: {
           account_name?: string
-          account_number?: string
-          bank_name?: string
+          account_number?: string | null
+          bank_address?: string | null
+          bank_name?: string | null
           bank_type?: Database["public"]["Enums"]["bank_type"]
+          branch_name?: string | null
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          ifsc_code?: string | null
           is_active?: boolean | null
           is_verified?: boolean | null
+          mobile_number?: string | null
+          routing_number?: string | null
+          swift_code?: string | null
           updated_at?: string | null
+          upi_id?: string | null
           user_id?: string
+          zipcode?: string | null
         }
         Relationships: []
       }
@@ -464,10 +518,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_latest_exchange_rate: {
+        Args: {
+          p_from_currency: Database["public"]["Enums"]["currency_type"]
+          p_to_currency: Database["public"]["Enums"]["currency_type"]
+        }
+        Returns: number
+      }
+      update_exchange_rate: {
+        Args: {
+          p_from_currency: Database["public"]["Enums"]["currency_type"]
+          p_new_rate: number
+          p_to_currency: Database["public"]["Enums"]["currency_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      bank_type: "BKASH" | "NAGAD" | "ROCKET" | "BANK"
+      bank_type: "BKASH" | "NAGAD" | "ROCKET" | "BANK" | "UPI"
       currency_type: "BDT" | "INR"
       transaction_status:
         | "PENDING"
@@ -605,7 +673,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      bank_type: ["BKASH", "NAGAD", "ROCKET", "BANK"],
+      bank_type: ["BKASH", "NAGAD", "ROCKET", "BANK", "UPI"],
       currency_type: ["BDT", "INR"],
       transaction_status: [
         "PENDING",
@@ -617,3 +685,4 @@ export const Constants = {
     },
   },
 } as const
+
