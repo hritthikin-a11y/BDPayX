@@ -35,11 +35,13 @@ export default function AddAdminBank() {
   });
 
   const bankTypes = [
+    { value: 'BANK', label: 'Bank' },
+    { value: 'BKASH', label: 'bKash' },
+    { value: 'NAGAD', label: 'Nagad' },
+    { value: 'ROCKET', label: 'Rocket' },
+    { value: 'UPI', label: 'UPI' },
     { value: 'COMMERCIAL', label: 'Commercial Bank' },
     { value: 'ISLAMIC', label: 'Islamic Bank' },
-    { value: 'SPECIALIZED', label: 'Specialized Bank' },
-    { value: 'FOREIGN', label: 'Foreign Bank' },
-    { value: 'DEVELOPMENT', label: 'Development Bank' },
   ];
 
   const currencies = [

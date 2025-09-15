@@ -377,13 +377,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   statsContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#1F2937',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   statsRow: {
     flexDirection: 'row',
@@ -391,21 +392,21 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: 12,
+    borderRadius: 10,
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
     color: '#1F2937',
-    marginTop: 8,
+    marginTop: 6,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6B7280',
     fontWeight: '500',
-    marginTop: 4,
+    marginTop: 2,
   },
   actionsContainer: {
     paddingHorizontal: 20,

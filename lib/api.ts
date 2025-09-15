@@ -1434,4 +1434,84 @@ export class ApiService {
       return 'USER'; // Default to USER role on error
     }
   }
+
+  // Exchange Rate Management
+  static async getExchangeRates(): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('exchange_rates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching exchange rates:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Unexpected error in getExchangeRates:', error);
+      return [];
+    }
+  }
+
+  static async createExchangeRate(rateData: any): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .from('exchange_rates')
+        .insert(rateData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating exchange rate:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Unexpected error in createExchangeRate:', error);
+      return false;
+    }
+  }
+
+  static async updateExchangeRate(rateId: string, updates: any): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .from('exchange_rates')
+        .update(updates)
+        .eq('id', rateId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating exchange rate:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Unexpected error in updateExchangeRate:', error);
+      return false;
+    }
+  }
+
+  static async deleteExchangeRate(rateId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('exchange_rates')
+        .delete()
+        .eq('id', rateId);
+
+      if (error) {
+        console.error('Error deleting exchange rate:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Unexpected error in deleteExchangeRate:', error);
+      return false;
+    }
+  }
 }
