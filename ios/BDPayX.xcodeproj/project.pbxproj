@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		080192631F12828A80B1F28E /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A051CEEB77E2E67DE5510A5C /* ExpoModulesProvider.swift */; };
+		0EC37316639A8B680E2C1511 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B245397D79E4F0BB5BAC51DE /* ExpoModulesProvider.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		1C65F0B5C03BD613353FDD73 /* libPods-BDPayX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCD2DE2004D722D6703550C3 /* libPods-BDPayX.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		86D4601D3CCF9A5424CC777D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AAC092E647754C44ADB9602E /* PrivacyInfo.xcprivacy */; };
+		5D8EECE5CB3984F2F252FC67 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 56C928F8075A77111F3BDC60 /* PrivacyInfo.xcprivacy */; };
+		628C9BAFCEEB82CEDD046782 /* libPods-BDPayX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E10524923433432C16AAEF1 /* libPods-BDPayX.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -20,16 +20,16 @@
 		13B07F961A680F5B00A75B9A /* BDPayX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BDPayX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BDPayX/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BDPayX/Info.plist; sourceTree = "<group>"; };
-		A051CEEB77E2E67DE5510A5C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BDPayX/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		56C928F8075A77111F3BDC60 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = BDPayX/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5E10524923433432C16AAEF1 /* libPods-BDPayX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BDPayX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		791A5BD91C791302C45D0CBF /* Pods-BDPayX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDPayX.release.xcconfig"; path = "Target Support Files/Pods-BDPayX/Pods-BDPayX.release.xcconfig"; sourceTree = "<group>"; };
+		8F81FDD5FDA21FCD04BAED34 /* Pods-BDPayX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDPayX.debug.xcconfig"; path = "Target Support Files/Pods-BDPayX/Pods-BDPayX.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = BDPayX/SplashScreen.storyboard; sourceTree = "<group>"; };
-		AAC092E647754C44ADB9602E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = BDPayX/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B245397D79E4F0BB5BAC51DE /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BDPayX/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		C0B31AF1D1EB03198DEA5587 /* Pods-BDPayX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDPayX.debug.xcconfig"; path = "Target Support Files/Pods-BDPayX/Pods-BDPayX.debug.xcconfig"; sourceTree = "<group>"; };
-		DCD2DE2004D722D6703550C3 /* libPods-BDPayX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BDPayX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BDPayX/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* BDPayX-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "BDPayX-Bridging-Header.h"; path = "BDPayX/BDPayX-Bridging-Header.h"; sourceTree = "<group>"; };
-		F6EBD52A9973B87B93A3FB40 /* Pods-BDPayX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDPayX.release.xcconfig"; path = "Target Support Files/Pods-BDPayX/Pods-BDPayX.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,13 +37,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C65F0B5C03BD613353FDD73 /* libPods-BDPayX.a in Frameworks */,
+				628C9BAFCEEB82CEDD046782 /* libPods-BDPayX.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0CCD303D196A87986D8B8F7D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8F81FDD5FDA21FCD04BAED34 /* Pods-BDPayX.debug.xcconfig */,
+				791A5BD91C791302C45D0CBF /* Pods-BDPayX.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* BDPayX */ = {
 			isa = PBXGroup;
 			children = (
@@ -53,7 +63,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				AAC092E647754C44ADB9602E /* PrivacyInfo.xcprivacy */,
+				56C928F8075A77111F3BDC60 /* PrivacyInfo.xcprivacy */,
 			);
 			name = BDPayX;
 			sourceTree = "<group>";
@@ -62,19 +72,17 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				DCD2DE2004D722D6703550C3 /* libPods-BDPayX.a */,
+				5E10524923433432C16AAEF1 /* libPods-BDPayX.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4F8DA98B05CF890B5DAAADE3 /* Pods */ = {
+		57BC667068E48DA352636875 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				C0B31AF1D1EB03198DEA5587 /* Pods-BDPayX.debug.xcconfig */,
-				F6EBD52A9973B87B93A3FB40 /* Pods-BDPayX.release.xcconfig */,
+				D6DC6272EB0AF49BA8F1830A /* BDPayX */,
 			);
-			name = Pods;
-			path = Pods;
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -91,8 +99,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				4F8DA98B05CF890B5DAAADE3 /* Pods */,
-				9352B9C829F97DC0BC612D40 /* ExpoModulesProviders */,
+				0CCD303D196A87986D8B8F7D /* Pods */,
+				57BC667068E48DA352636875 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -107,14 +115,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9352B9C829F97DC0BC612D40 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				D737D4FF2E6D065E8F418D4E /* BDPayX */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -124,10 +124,10 @@
 			path = BDPayX/Supporting;
 			sourceTree = "<group>";
 		};
-		D737D4FF2E6D065E8F418D4E /* BDPayX */ = {
+		D6DC6272EB0AF49BA8F1830A /* BDPayX */ = {
 			isa = PBXGroup;
 			children = (
-				A051CEEB77E2E67DE5510A5C /* ExpoModulesProvider.swift */,
+				B245397D79E4F0BB5BAC51DE /* ExpoModulesProvider.swift */,
 			);
 			name = BDPayX;
 			sourceTree = "<group>";
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BDPayX" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				EDE5A5DC0F33FDD13D7AE780 /* [Expo] Configure project */,
+				72503CFE46ED428845DA9444 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				283641DF58345608C1C81396 /* [CP] Embed Pods Frameworks */,
+				9338D0C641D41F48943D521B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				86D4601D3CCF9A5424CC777D /* PrivacyInfo.xcprivacy in Resources */,
+				5D8EECE5CB3984F2F252FC67 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,23 +240,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		283641DF58345608C1C81396 /* [CP] Embed Pods Frameworks */ = {
+		72503CFE46ED428845DA9444 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BDPayX/Pods-BDPayX-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			inputFileListPaths = (
 			);
-			name = "[CP] Embed Pods Frameworks";
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDPayX/Pods-BDPayX-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BDPayX/expo-configure-project.sh\"\n";
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -334,24 +335,23 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDPayX/Pods-BDPayX-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EDE5A5DC0F33FDD13D7AE780 /* [Expo] Configure project */ = {
+		9338D0C641D41F48943D521B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BDPayX/Pods-BDPayX-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
 			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BDPayX/expo-configure-project.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDPayX/Pods-BDPayX-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -361,7 +361,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				080192631F12828A80B1F28E /* ExpoModulesProvider.swift in Sources */,
+				0EC37316639A8B680E2C1511 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,7 +370,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C0B31AF1D1EB03198DEA5587 /* Pods-BDPayX.debug.xcconfig */;
+			baseConfigurationReference = 8F81FDD5FDA21FCD04BAED34 /* Pods-BDPayX.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -406,7 +406,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F6EBD52A9973B87B93A3FB40 /* Pods-BDPayX.release.xcconfig */;
+			baseConfigurationReference = 791A5BD91C791302C45D0CBF /* Pods-BDPayX.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

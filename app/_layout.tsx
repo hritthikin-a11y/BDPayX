@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
   const [appIsReady, setAppIsReady] = useState(false);
@@ -45,13 +45,25 @@ const InitialLayout = () => {
     if (isLoading || !appIsReady) return;
 
     const inTabsGroup = segments[0] === '(tabs)';
+    const inAdminGroup = segments[0] === '(admin)';
+    const inAuthGroup = segments[0] === '(auth)';
 
-    if (user && !inTabsGroup) {
-      router.replace('/(tabs)/');
-    } else if (!user && inTabsGroup) {
+    if (user) {
+      if (isAdmin && !inAdminGroup) {
+        // Admin users go to admin dashboard
+        router.replace('/(admin)/');
+      } else if (!isAdmin && !inTabsGroup) {
+        // Regular users go to user tabs
+        router.replace('/(tabs)/');
+      } else if (!isAdmin && inAdminGroup) {
+        // Regular users shouldn't access admin
+        router.replace('/(tabs)/');
+      }
+    } else if (!user && (inTabsGroup || inAdminGroup)) {
+      // Not logged in, redirect to login
       router.replace('/(auth)/login');
     }
-  }, [user, isLoading, segments, router, appIsReady]);
+  }, [user, isAdmin, isLoading, segments, router, appIsReady]);
 
   if (!appIsReady) {
     return null;
@@ -61,6 +73,7 @@ const InitialLayout = () => {
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(admin)" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
