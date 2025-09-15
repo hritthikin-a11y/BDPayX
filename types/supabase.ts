@@ -103,11 +103,15 @@ export type Database = {
       deposit_requests: {
         Row: {
           admin_bank_account_id: string
+          admin_feedback: string | null
           admin_notes: string | null
           amount: number
           created_at: string | null
           currency: Database["public"]["Enums"]["currency_type"]
           id: string
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
           screenshot_url: string | null
           sender_name: string
           status: Database["public"]["Enums"]["transaction_status"] | null
@@ -118,11 +122,15 @@ export type Database = {
         }
         Insert: {
           admin_bank_account_id: string
+          admin_feedback?: string | null
           admin_notes?: string | null
           amount: number
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
           screenshot_url?: string | null
           sender_name: string
           status?: Database["public"]["Enums"]["transaction_status"] | null
@@ -133,11 +141,15 @@ export type Database = {
         }
         Update: {
           admin_bank_account_id?: string
+          admin_feedback?: string | null
           admin_notes?: string | null
           amount?: number
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
           screenshot_url?: string | null
           sender_name?: string
           status?: Database["public"]["Enums"]["transaction_status"] | null
@@ -195,12 +207,16 @@ export type Database = {
       }
       exchange_requests: {
         Row: {
+          admin_feedback: string | null
           admin_notes: string | null
           created_at: string | null
           exchange_rate: number
           from_amount: number
           from_currency: Database["public"]["Enums"]["currency_type"]
           id: string
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
           status: Database["public"]["Enums"]["transaction_status"] | null
           to_amount: number
           to_currency: Database["public"]["Enums"]["currency_type"]
@@ -209,12 +225,16 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_feedback?: string | null
           admin_notes?: string | null
           created_at?: string | null
           exchange_rate: number
           from_amount: number
           from_currency: Database["public"]["Enums"]["currency_type"]
           id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           to_amount: number
           to_currency: Database["public"]["Enums"]["currency_type"]
@@ -223,12 +243,16 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_feedback?: string | null
           admin_notes?: string | null
           created_at?: string | null
           exchange_rate?: number
           from_amount?: number
           from_currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           to_amount?: number
           to_currency?: Database["public"]["Enums"]["currency_type"]
@@ -245,6 +269,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rejection_reasons: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          reason: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string
+        }
+        Relationships: []
+      }
+      request_history: {
+        Row: {
+          admin_id: string | null
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          new_status: string
+          previous_status: string | null
+          request_id: string
+          request_type: string
+        }
+        Insert: {
+          admin_id?: string | null
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          new_status: string
+          previous_status?: string | null
+          request_id: string
+          request_type: string
+        }
+        Update: {
+          admin_id?: string | null
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          new_status?: string
+          previous_status?: string | null
+          request_id?: string
+          request_type?: string
+        }
+        Relationships: []
       }
       transactions: {
         Row: {
@@ -398,6 +482,7 @@ export type Database = {
           is_verified: boolean | null
           kyc_status: string | null
           phone: string | null
+          role: string | null
           updated_at: string | null
           user_id: string
         }
@@ -411,6 +496,7 @@ export type Database = {
           is_verified?: boolean | null
           kyc_status?: string | null
           phone?: string | null
+          role?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -424,6 +510,7 @@ export type Database = {
           is_verified?: boolean | null
           kyc_status?: string | null
           phone?: string | null
+          role?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -461,36 +548,48 @@ export type Database = {
       }
       withdrawal_requests: {
         Row: {
+          admin_feedback: string | null
           admin_notes: string | null
           amount: number
           bank_account_id: string
           created_at: string | null
           currency: Database["public"]["Enums"]["currency_type"]
           id: string
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
           status: Database["public"]["Enums"]["transaction_status"] | null
           transaction_id: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          admin_feedback?: string | null
           admin_notes?: string | null
           amount: number
           bank_account_id: string
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           transaction_id: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          admin_feedback?: string | null
           admin_notes?: string | null
           amount?: number
           bank_account_id?: string
           created_at?: string | null
           currency?: Database["public"]["Enums"]["currency_type"]
           id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["transaction_status"] | null
           transaction_id?: string
           updated_at?: string | null

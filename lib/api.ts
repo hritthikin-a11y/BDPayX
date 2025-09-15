@@ -324,6 +324,101 @@ export class ApiService {
     }
   }
 
+  // Create Payment Gateway Deposit Request
+  static async createPaymentDepositRequest(
+    userId: string,
+    amount: number,
+    currency: 'BDT' | 'INR',
+    senderName: string,
+    transactionRef: string,
+    adminBankAccountId: string,
+    paymentMethod: string = 'PAYMENT_GATEWAY',
+    gatewayData?: any
+  ): Promise<DepositRequest | null> {
+    try {
+      // Create transaction first
+      const { data: transactionData, error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: userId,
+          type: 'DEPOSIT',
+          status: 'PENDING',
+          amount,
+          currency,
+          reference_number: transactionRef,
+        })
+        .select()
+        .single();
+
+      if (transactionError) {
+        console.error('Error creating payment gateway transaction:', transactionError);
+        return null;
+      }
+
+      // Create deposit request
+      const { data, error } = await supabase
+        .from('deposit_requests')
+        .insert({
+          user_id: userId,
+          transaction_id: transactionData.id,
+          amount,
+          currency,
+          sender_name: senderName,
+          transaction_ref: transactionRef,
+          admin_bank_account_id: adminBankAccountId,
+          status: 'PENDING',
+          admin_notes: `Payment Gateway: ${paymentMethod}${gatewayData ? `\nGateway Data: ${JSON.stringify(gatewayData)}` : ''}`,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating payment gateway deposit request:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Unexpected error in createPaymentDepositRequest:', error);
+      return null;
+    }
+  }
+
+  // Get User Deposit Requests
+  static async getUserDepositRequests(
+    userId: string
+  ): Promise<DepositRequest[]> {
+    try {
+      const { data, error } = await supabase
+        .from('deposit_requests')
+        .select(
+          `
+          *,
+          admin_bank_accounts (
+            account_name,
+            bank_name,
+            bank_type,
+            account_number,
+            mobile_number,
+            upi_id
+          )
+        `
+        )
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching deposit requests:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Unexpected error in getUserDepositRequests:', error);
+      return [];
+    }
+  }
+
   // Withdrawal Requests
   static async createWithdrawalRequest(
     userId: string,
@@ -435,6 +530,350 @@ export class ApiService {
       return data;
     } catch (error) {
       console.error('Unexpected error in createExchangeRequest:', error);
+      return null;
+    }
+  }
+
+  // Get User Withdrawal Requests
+  static async getUserWithdrawalRequests(
+    userId: string
+  ): Promise<WithdrawalRequest[]> {
+    try {
+      const { data, error } = await supabase
+        .from('withdrawal_requests')
+        .select(
+          `
+          *,
+          bank_account:user_bank_accounts (
+            account_name,
+            bank_name,
+            bank_type,
+            account_number,
+            mobile_number,
+            upi_id
+          )
+        `
+        )
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching withdrawal requests:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Unexpected error in getUserWithdrawalRequests:', error);
+      return [];
+    }
+  }
+
+  // Get User Exchange Requests
+  static async getUserExchangeRequests(
+    userId: string
+  ): Promise<ExchangeRequest[]> {
+    try {
+      const { data, error } = await supabase
+        .from('exchange_requests')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching exchange requests:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Unexpected error in getUserExchangeRequests:', error);
+      return [];
+    }
+  }
+
+  // Admin Functions
+
+  // Get all pending deposit requests for admin
+  static async getAllDepositRequests(
+    status?: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REJECTED'
+  ): Promise<any[]> {
+    try {
+      let query = supabase
+        .from('deposit_requests')
+        .select(
+          `
+          *,
+          user_profile:user_profiles!user_id (
+            full_name,
+            phone
+          ),
+          admin_bank_account:admin_bank_accounts (
+            account_name,
+            bank_name,
+            bank_type,
+            account_number,
+            mobile_number,
+            upi_id
+          ),
+          processed_by_user:user_profiles!processed_by (
+            full_name
+          )
+        `
+        )
+        .order('created_at', { ascending: false });
+
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching deposit requests:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Unexpected error in getAllDepositRequests:', error);
+      return [];
+    }
+  }
+
+  // Process deposit request (approve/reject)
+  static async processDepositRequest(
+    requestId: string,
+    adminId: string,
+    action: 'SUCCESS' | 'REJECTED',
+    adminNotes?: string,
+    rejectionReason?: string,
+    adminFeedback?: string
+  ): Promise<boolean> {
+    try {
+      // Get the deposit request details first
+      const { data: depositRequest, error: fetchError } = await supabase
+        .from('deposit_requests')
+        .select('*')
+        .eq('id', requestId)
+        .single();
+
+      if (fetchError || !depositRequest) {
+        console.error('Error fetching deposit request:', fetchError);
+        return false;
+      }
+
+      // Update deposit request
+      const { error: updateError } = await supabase
+        .from('deposit_requests')
+        .update({
+          status: action,
+          processed_by: adminId,
+          processed_at: new Date().toISOString(),
+          admin_notes: adminNotes,
+          rejection_reason: rejectionReason,
+          admin_feedback: adminFeedback,
+        })
+        .eq('id', requestId);
+
+      if (updateError) {
+        console.error('Error updating deposit request:', updateError);
+        return false;
+      }
+
+      // Update corresponding transaction
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .update({
+          status: action,
+          processed_at: new Date().toISOString(),
+          admin_notes: adminNotes,
+        })
+        .eq('id', depositRequest.transaction_id);
+
+      if (transactionError) {
+        console.error('Error updating transaction:', transactionError);
+        return false;
+      }
+
+      // If approved (SUCCESS), add money to user's wallet
+      if (action === 'SUCCESS') {
+        const balanceField =
+          depositRequest.currency === 'BDT' ? 'bdt_balance' : 'inr_balance';
+
+        // First get current balance
+        const { data: currentWallet, error: walletFetchError } = await supabase
+          .from('wallets')
+          .select(balanceField)
+          .eq('user_id', depositRequest.user_id)
+          .single();
+
+        if (walletFetchError) {
+          console.error('Error fetching wallet:', walletFetchError);
+          return false;
+        }
+
+        const currentBalance = currentWallet[balanceField] || 0;
+        const newBalance = currentBalance + depositRequest.amount;
+
+        const { error: walletError } = await supabase
+          .from('wallets')
+          .update({
+            [balanceField]: newBalance,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('user_id', depositRequest.user_id);
+
+        if (walletError) {
+          console.error('Error updating wallet balance:', walletError);
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Unexpected error in processDepositRequest:', error);
+      return false;
+    }
+  }
+
+  // Get rejection reasons
+  static async getRejectionReasons(
+    category: 'DEPOSIT' | 'WITHDRAWAL' | 'EXCHANGE'
+  ): Promise<any[]> {
+    try {
+      // Return hardcoded common reasons for now
+      return this.getDefaultRejectionReasons(category);
+    } catch (error) {
+      console.error('Unexpected error in getRejectionReasons:', error);
+      return this.getDefaultRejectionReasons(category);
+    }
+  }
+
+  // Fallback rejection reasons
+  private static getDefaultRejectionReasons(
+    category: 'DEPOSIT' | 'WITHDRAWAL' | 'EXCHANGE'
+  ): any[] {
+    const depositReasons = [
+      {
+        id: '1',
+        reason: 'Amount Mismatch',
+        description: 'The amount received does not match the requested amount',
+      },
+      {
+        id: '2',
+        reason: 'Bank Charges Deducted',
+        description: 'Bank charges were deducted from the transfer amount',
+      },
+      {
+        id: '3',
+        reason: 'Poor Screenshot Quality',
+        description: 'Transaction screenshot is unclear or unreadable',
+      },
+      {
+        id: '4',
+        reason: 'Invalid Transaction Reference',
+        description:
+          'The provided transaction reference is incorrect or not found',
+      },
+      {
+        id: '5',
+        reason: 'Wrong Bank Account',
+        description: 'Payment was made to wrong admin bank account',
+      },
+      {
+        id: '6',
+        reason: 'Duplicate Request',
+        description: 'This transaction has already been processed',
+      },
+      {
+        id: '7',
+        reason: 'Suspicious Activity',
+        description: 'Transaction requires additional verification',
+      },
+      {
+        id: '8',
+        reason: 'Incomplete Information',
+        description: 'Required transaction details are missing or incorrect',
+      },
+    ];
+
+    const withdrawalReasons = [
+      {
+        id: '1',
+        reason: 'Insufficient Balance',
+        description: 'User does not have sufficient balance for withdrawal',
+      },
+      {
+        id: '2',
+        reason: 'Invalid Bank Details',
+        description: 'Provided bank account details are incorrect',
+      },
+      {
+        id: '3',
+        reason: 'Daily Limit Exceeded',
+        description: 'Withdrawal amount exceeds daily limit',
+      },
+      {
+        id: '4',
+        reason: 'Account Verification Required',
+        description: 'User bank account needs verification',
+      },
+      {
+        id: '5',
+        reason: 'Suspicious Activity',
+        description: 'Withdrawal request requires additional verification',
+      },
+      {
+        id: '6',
+        reason: 'Bank Account Inactive',
+        description: 'Selected bank account is inactive or disabled',
+      },
+    ];
+
+    switch (category) {
+      case 'DEPOSIT':
+        return depositReasons;
+      case 'WITHDRAWAL':
+        return withdrawalReasons;
+      case 'EXCHANGE':
+        return [];
+      default:
+        return [];
+    }
+  }
+
+  // Get request history
+  static async getRequestHistory(
+    requestId: string,
+    requestType: 'DEPOSIT' | 'WITHDRAWAL' | 'EXCHANGE'
+  ): Promise<any[]> {
+    try {
+      // For now, return empty array since we need to create proper RPC functions
+      return [];
+    } catch (error) {
+      console.error('Unexpected error in getRequestHistory:', error);
+      return [];
+    }
+  }
+
+  // Check if user is admin
+  static async checkUserRole(userId: string): Promise<string | null> {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user role:', error);
+        return null;
+      }
+
+      return data?.role || 'USER';
+    } catch (error) {
+      console.error('Unexpected error in checkUserRole:', error);
       return null;
     }
   }

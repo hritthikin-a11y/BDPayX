@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#4A90E2"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bdpayx.app"
@@ -27,6 +29,11 @@
       "favicon": "./assets/logo.png"
     },
     "scheme": "bdpayx",
-    "plugins": ["expo-router", "expo-font"]
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-build-properties",
+      "expo-web-browser"
+    ]
   }
 }
